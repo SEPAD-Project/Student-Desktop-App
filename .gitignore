@@ -1,1 +1,4 @@
 Student-side/gui/test_file.py
+database-code/__pycache__/
+Student-side/gui/__pycache__/
+Student-side/backend/__pycache__/
