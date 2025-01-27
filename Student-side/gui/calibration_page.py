@@ -6,7 +6,7 @@ from time import sleep
 from webbrowser import open
 import os
 from tkinter import messagebox
-
+from main_page import main_page_func
 
 
 class CalibrationPage(CTk):
@@ -105,6 +105,7 @@ class CalibrationPage(CTk):
     def next_page_func(self):
         if os.path.exists('captured_image_1.jpg') and os.path.exists('captured_image_2.jpg') :
             self.destroy()
+            main_page_func()
         else:
             messagebox.showerror('Calibration Error', 'You have not taken picture 1 or 2 !')
 
