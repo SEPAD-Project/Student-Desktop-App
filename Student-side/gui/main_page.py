@@ -9,8 +9,9 @@ class MainPage(CTk):
         super().__init__()
 
         self.title('Main-Page')
-        self.geometry('900x700')
-        self.resizable(False, False)
+        self.geometry('1000x650')
+        self.minsize(1000, 650)
+        # self.resizable(False, False)
         # getting avaiable cameras
         self.get_available_cameras()
         # main red frame
@@ -25,24 +26,24 @@ class MainPage(CTk):
         self.camera_selectbox_lbl = CTkLabel(self.elements_frame, text='Camera :' , font=('montserrat', 30, 'bold'))
         self.camera_selectbox = CTkOptionMenu(self.elements_frame, values=list(self.available_camera.keys()), font=('montserrat', 25, 'bold'), height=40, command=self.change_camera)
         self.rechech_availale_camera = CTkButton(self.elements_frame, text='Recheck', font=('montserrat', 20, 'bold'), height=40, border_color='white', border_width=2, command=self.recheck_button)
-        self.current_connection_status_lbl = CTkLabel(self.elements_frame, text='Current Status Of Connection :' , font=('montserrat', 30))
+        self.connection_status_ping_lbl = CTkLabel(self.elements_frame, text='Connection Status / Ping' , font=('montserrat', 25))
         self.current_connection_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
-        self.current_ping_status_lbl = CTkLabel(self.elements_frame, text='PING :' , font=('montserrat', 30))
+        # self.current_ping_status_lbl = CTkLabel(self.elements_frame, text='PING :' , font=('montserrat', 30))
         self.current_ping_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
         self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'))
 
         
         # placing elements
         self.camera_label.grid(        row=0, column=0, rowspan=4)
-        self.user_detail_textbox.grid( row=0, column=1, padx=(20,0),   sticky='nswe')
-        self.camera_selectbox_lbl.grid(row=1, column=1, padx=(20,0),   sticky='w', pady=(5,0))
-        self.camera_selectbox.grid(    row=2, column=1, padx=(20,0),   sticky='we', pady=(0,5))     
-        self.rechech_availale_camera.grid(row=3, column=1, padx=(20, 0), sticky='we', pady=5)
-        self.current_connection_status_lbl.grid(  row=4, column=0,                sticky='w', pady=(15, 0))
+        self.user_detail_textbox.grid( row=0, column=1, padx=(20,0),   sticky='nswe', columnspan=2)
+        self.camera_selectbox_lbl.grid(row=1, column=1, padx=(20,0),   sticky='w', pady=(5,0), columnspan=2)
+        self.camera_selectbox.grid(    row=2, column=1, padx=(20,0),   sticky='we', pady=(0,5), columnspan=2)     
+        self.rechech_availale_camera.grid(row=3, column=1, padx=(20, 0), sticky='we', pady=5, columnspan=2)
+        self.connection_status_ping_lbl.grid(  row=4, column=0,                sticky='w', pady=(15, 0))
         self.current_connection_status_entry.grid(row=4, column=1, padx=(20,0),   sticky='we',pady=(15, 0))
-        self.current_ping_status_lbl.grid(  row=5, column=0,                sticky='w', pady=(15, 0))
-        self.current_ping_status_entry.grid(row=5, column=1, padx=(20,0),   sticky='we',pady=(15, 0))
-        self.start_button.grid(        row=6, column=0, columnspan=2,  sticky='ew', pady=(15, 0))
+        # self.current_ping_status_lbl.grid(  row=5, column=0,                sticky='w', pady=(15, 0))
+        self.current_ping_status_entry.grid(row=4, column=2, padx=(20,0),   sticky='we',pady=(15, 0))
+        self.start_button.grid(        row=6, column=0, columnspan=3,  sticky='ew', pady=(15, 0))
 
 
         Thread(target=self.start_video_stream).start()
