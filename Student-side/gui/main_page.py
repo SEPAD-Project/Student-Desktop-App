@@ -58,8 +58,9 @@ class MainPage(CTk):
         self.current_ping_status_entry.grid(row=4, column=2, padx=(20,0),   sticky='we',pady=(15, 0))
         self.start_button.grid(        row=6, column=0, columnspan=3,  sticky='ew', pady=(15, 0))
 
-
+        self.pinging()
         Thread(target=self.start_video_stream).start()
+
 
     # starting camera with default camera index 
     def start_video_stream(self):
@@ -109,17 +110,30 @@ class MainPage(CTk):
         print(looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame))
         self.after(5000, self.generating_result)
     
-    def ping(self):
-        packet = IP(dst='')/ICMP() # Make a ICMP packet
+    def pinging(self):
+        try:
+            packet = IP(dst='google.com')/ICMP() # Make a ICMP packet
 
-        start_time = time.time()
-        response = sr1(packet, timeout=2, verbose=0)
-        end_time = time.time()
+            start_time = time()
+            response = sr1(packet, timeout=2, verbose=0)
+            end_time = time()
 
-        if response:
-            ping = (end_time - start_time) * 1000
-        else:
-            ping = 'faild'
+            if response:
+                ping = f'{(end_time - start_time) * 1000:.2f}ms'
+                # print(ping)
+                self.current_ping_status_entry.configure(state=NORMAL)
+                self.current_ping_status_entry.delete(0, END)
+                self.current_ping_status_entry.insert(END, ping)
+            else:
+                ping = 'Faild'
+                self.current_ping_status_entry.configure(state=NORMAL)
+                self.current_ping_status_entry.delete(0, END)
+                self.current_ping_status_entry.insert(END, ping)
+            self.current_ping_status_entry.configure(state=DISABLED)
+        except Exception:
+            pass
+        
+        self.after(1000, self.pinging)
         
 
         
@@ -129,9 +143,11 @@ class MainPage(CTk):
         self.mainloop()
 
 
+
 def main_page_func(udata):
     app = MainPage(udata)
-    app.run()
+    Thread(target=app.run()).start()
+
 
 
 if __name__ == "__main__":
