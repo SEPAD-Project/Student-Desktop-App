@@ -2,3 +2,5 @@ customtkinter
 opencv-python
 pillow
 mysql-connector-python
+requests
+flask
