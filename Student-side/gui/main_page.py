@@ -6,17 +6,21 @@ from threading import Thread
 from pathlib import Path
 import sys
 from scapy.all import ICMP, IP, sr1
-from time import time
+import time
+
 parent_dir = Path(__file__).resolve().parent.parent.parent.parent
 print(parent_dir)
 sys.path.append(str(parent_dir / "Head-Position-Estimination/looking_result/"))
+sys.path.append(str(parent_dir / "client-side/student-side/backend"))
 
 from func_looking_result import looking_result # type: ignore
+from client_http import send_data_to_server
 
 class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
         self.udata = udata
+        self.odd_even = 1
         self.title('Main-Page')
         self.geometry('1000x650')
         self.minsize(1000, 650)
@@ -31,7 +35,7 @@ class MainPage(CTk):
         self.elements_frame.place(relx=0.5, rely=0.5, anchor='center')
         # elements
         self.camera_label = CTkLabel(master=self.elements_frame, text='')
-        self.user_detail_textbox = CTkTextbox(master=self.elements_frame, border_color='white', border_width=2, font=('montserrat', 15, 'bold'), height=130)
+        self.user_detail_textbox = CTkTextbox(master=self.elements_frame, border_color='white', border_width=2, font=('montserrat', 14, 'bold'), height=130)
         self.camera_selectbox_lbl = CTkLabel(self.elements_frame, text='Camera :' , font=('montserrat', 30, 'bold'))
         self.camera_selectbox = CTkOptionMenu(self.elements_frame, values=list(self.available_camera.keys()), font=('montserrat', 25, 'bold'), height=40, command=self.change_camera)
         self.rechech_availale_camera = CTkButton(self.elements_frame, text='Recheck', font=('montserrat', 20, 'bold'), height=40, border_color='white', border_width=2, command=self.recheck_button)
@@ -39,12 +43,12 @@ class MainPage(CTk):
         self.current_connection_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
         # self.current_ping_status_lbl = CTkLabel(self.elements_frame, text='PING :' , font=('montserrat', 30))
         self.current_ping_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
-        self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'))
+        self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'), command=self.start_btn_func)
 
         # adding user data (self.udata) to textbox
         self.user_detail_textbox.delete(1.0, END)
-        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[3]}UID : '
-        self.user_detail_textbox.insert(1.0, text=self.text)
+        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[4]}\nSchool : {self.udata[5]}\nNational code : {self.udata[7]}'
+        self.user_detail_textbox.insert(1.0, text=self.text) # name, family, password, username, class, school, uid, national_code
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
         self.camera_label.grid(        row=0, column=0, rowspan=4)
@@ -57,7 +61,9 @@ class MainPage(CTk):
         # self.current_ping_status_lbl.grid(  row=5, column=0,                sticky='w', pady=(15, 0))
         self.current_ping_status_entry.grid(row=4, column=2, padx=(20,0),   sticky='we',pady=(15, 0))
         self.start_button.grid(        row=6, column=0, columnspan=3,  sticky='ew', pady=(15, 0))
-
+        
+        self.current_connection_status_entry.insert(0, 'OFFLINE')
+        self.current_connection_status_entry.configure(state=DISABLED)
         self.pinging()
         Thread(target=self.start_video_stream).start()
 
@@ -107,34 +113,63 @@ class MainPage(CTk):
 
     def generating_result(self):
         # print('entered')
-        print(looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame))
+        ctime = time.strftime("%H:%M:%S", time.localtime())
+        self.txt = f'{looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame)}-{ctime}'
+        print(self.txt)
+        print(self.odd_even)
+        if self.odd_even % 2 == 0:
+            self.sender_func(self.txt)
         self.after(5000, self.generating_result)
     
     def pinging(self):
-        try:
-            packet = IP(dst='google.com')/ICMP() # Make a ICMP packet
 
-            start_time = time()
-            response = sr1(packet, timeout=2, verbose=0)
-            end_time = time()
+        packet = IP(dst='google.com')/ICMP() # Make a ICMP packet
 
-            if response:
-                ping = f'{(end_time - start_time) * 1000:.2f}ms'
+        start_time = time.time()
+        response = sr1(packet, timeout=2, verbose=0)
+        end_time = time.time()
+
+        if response:
+            ping = f'{(end_time - start_time) * 1000:.2f}ms'
                 # print(ping)
-                self.current_ping_status_entry.configure(state=NORMAL)
-                self.current_ping_status_entry.delete(0, END)
-                self.current_ping_status_entry.insert(END, ping)
-            else:
-                ping = 'Faild'
-                self.current_ping_status_entry.configure(state=NORMAL)
-                self.current_ping_status_entry.delete(0, END)
-                self.current_ping_status_entry.insert(END, ping)
-            self.current_ping_status_entry.configure(state=DISABLED)
-        except Exception:
-            pass
-        
+            self.current_ping_status_entry.configure(state=NORMAL)
+            self.current_ping_status_entry.delete(0, END)
+            self.current_ping_status_entry.insert(END, ping)
+        else:
+            ping = 'Faild'
+            self.current_ping_status_entry.configure(state=NORMAL)
+            self.current_ping_status_entry.delete(0, END)
+            self.current_ping_status_entry.insert(END, ping)
+        self.current_ping_status_entry.configure(state=DISABLED)
+
         self.after(1000, self.pinging)
+
+     
+
+    def start_btn_func(self): #name, family, password, username, class, school, uid, national_code
+        self.odd_even+=1
+        if self.odd_even % 2 == 0:
+            self.current_connection_status_entry.configure(state=NORMAL)
+            self.current_connection_status_entry.delete(0, END)
+            self.current_connection_status_entry.insert(0, 'IN-CLASS')
+            self.current_connection_status_entry.configure(state=DISABLED)
+            self.start_button.configure(text="Stop", fg_color='red', hover_color='#9C1218')
+            
+            
+        else:
+            self.current_connection_status_entry.configure(state=NORMAL)
+            self.current_connection_status_entry.delete(0, END)
+            self.current_connection_status_entry.insert(0, 'OFFLINE')
+            self.current_connection_status_entry.configure(state=DISABLED)
+            self.start_button.configure(text="Start", fg_color='#1F6AA5', hover_color='#144870')
+
+    def sender_func(self, txt):   
+        data = self.udata
+        send_data_to_server(username=data[3], password=data[2], 
+                            school_name=data[5], class_code=data[4], text=txt)
         
+        # if self.odd_even % 2 == 1:
+        #     self.after(5000, self.sender_func())
 
         
 
@@ -151,6 +186,6 @@ def main_page_func(udata):
 
 
 if __name__ == "__main__":
-    main_page_func(('abolfazl', 'rashidian', '123456', '1052'))
+    main_page_func(('abolfazl', 'rashidian', 'supsec', 'testus', 1052, 'hnsch1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
 
 
