@@ -3,6 +3,15 @@ import cv2
 from PIL import Image, ImageTk
 import os
 from threading import Thread
+from pathlib import Path
+import sys
+from scapy.all import ICMP, IP, sr1
+from time import time
+parent_dir = Path(__file__).resolve().parent.parent.parent.parent
+print(parent_dir)
+sys.path.append(str(parent_dir / "Head-Position-Estimination/looking_result/"))
+
+from func_looking_result import looking_result # type: ignore
 
 class MainPage(CTk):
     def __init__(self, udata):
@@ -22,7 +31,7 @@ class MainPage(CTk):
         self.elements_frame.place(relx=0.5, rely=0.5, anchor='center')
         # elements
         self.camera_label = CTkLabel(master=self.elements_frame, text='')
-        self.user_detail_textbox = CTkTextbox(master=self.elements_frame, border_color='white', border_width=2, font=('montserrat', 15, 'bold'))
+        self.user_detail_textbox = CTkTextbox(master=self.elements_frame, border_color='white', border_width=2, font=('montserrat', 15, 'bold'), height=130)
         self.camera_selectbox_lbl = CTkLabel(self.elements_frame, text='Camera :' , font=('montserrat', 30, 'bold'))
         self.camera_selectbox = CTkOptionMenu(self.elements_frame, values=list(self.available_camera.keys()), font=('montserrat', 25, 'bold'), height=40, command=self.change_camera)
         self.rechech_availale_camera = CTkButton(self.elements_frame, text='Recheck', font=('montserrat', 20, 'bold'), height=40, border_color='white', border_width=2, command=self.recheck_button)
@@ -34,7 +43,7 @@ class MainPage(CTk):
 
         # adding user data (self.udata) to textbox
         self.user_detail_textbox.delete(1.0, END)
-        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[2]}'
+        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[3]}UID : '
         self.user_detail_textbox.insert(1.0, text=self.text)
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
@@ -57,6 +66,7 @@ class MainPage(CTk):
         default_camera_index = 0
         self.cap = cv2.VideoCapture(default_camera_index)
         self.update_video()
+        self.generating_result()
     # getting connected camera to system by testing their index in VideoCapture
     def get_available_cameras(self):
         cameras = {}
@@ -67,7 +77,7 @@ class MainPage(CTk):
                 cameras[name] = i
                 cap.release()
         self.available_camera = cameras if cameras else {'No Camera found' : -1}
-        print(self.available_camera)
+        # print(self.available_camera)
     # changing camera by releasing and reopening with VideoCapture
     def change_camera(self, camera_name):
         camera_index = self.available_camera.get(camera_name, -1)
@@ -76,9 +86,10 @@ class MainPage(CTk):
         self.cap = cv2.VideoCapture(camera_index)
     # update video each 10ms
     def update_video(self):
+        global frame
         ret, frame = self.cap.read()
         if ret:
-            frame = cv2.resize(frame, (600, 450))
+            frame = cv2.resize(frame, (480, 360))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(frame)
             imgtk = ImageTk.PhotoImage(image=img)
@@ -90,10 +101,33 @@ class MainPage(CTk):
     def recheck_button(self):
         Thread(target=self.get_available_cameras).start()
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
-        print(self.available_camera)
+        # print(self.available_camera)
+
+
+    def generating_result(self):
+        # print('entered')
+        print(looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame))
+        self.after(5000, self.generating_result)
+    
+    def ping(self):
+        packet = IP(dst='')/ICMP() # Make a ICMP packet
+
+        start_time = time.time()
+        response = sr1(packet, timeout=2, verbose=0)
+        end_time = time.time()
+
+        if response:
+            ping = (end_time - start_time) * 1000
+        else:
+            ping = 'faild'
+        
+
+        
+
 
     def run(self):
         self.mainloop()
+
 
 def main_page_func(udata):
     app = MainPage(udata)
@@ -101,6 +135,6 @@ def main_page_func(udata):
 
 
 if __name__ == "__main__":
-    main_page_func()
+    main_page_func(('abolfazl', 'rashidian', '123456', '1052'))
 
 
