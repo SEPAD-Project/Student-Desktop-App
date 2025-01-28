@@ -7,6 +7,13 @@ from webbrowser import open
 import os
 from tkinter import messagebox
 from main_page import main_page_func
+from pathlib import Path
+import sys
+
+parent_dir = Path(__file__).resolve().parent.parent.parent.parent
+sys.path.append(str(parent_dir / "Head-Position-Estimination/calibration"))
+
+from func_save_data import save_calibration_data # type: ignore
 
 
 class CalibrationPage(CTk):
@@ -98,25 +105,37 @@ class CalibrationPage(CTk):
     def capture_image(self, button_number):
         ret, frame = self.cap.read()
         if ret:
-            filename = f'captured_image_{button_number}.jpg'
-            cv2.imwrite(filename, frame)
-            print(f'Image {button_number} saved as {filename}')
+            self.filename = fr'C:\\sap-project\\captured_image_{button_number}.jpg'
+            cv2.imwrite(self.filename, frame)
+            print(f'Image {button_number} saved as {self.filename}')
         
     def next_page_func(self):
-        if os.path.exists('captured_image_1.jpg') and os.path.exists('captured_image_2.jpg') :
+        if os.path.exists('C:\\sap-project\\captured_image_1.jpg') and os.path.exists('C:\\sap-project\\captured_image_2.jpg') :
+            self.next_page_button.configure(state='disabled', text='Calibrating')
+            self.calibration(output='C:\\sap-project\\calibration-data.txt'
+                             ,path1=r'C:\\sap-project\\captured_image_1.jpg'
+                            ,path2=r'C:\\sap-project\\captured_image_2.jpg')
+            self.next_page_button.configure(state='normal', text='Next Page')            
             self.destroy()
-            main_page_func()
         else:
             messagebox.showerror('Calibration Error', 'You have not taken picture 1 or 2 !')
 
+    def calibration(self, output, path1, path2):
+        save_calibration_data(file_path=output, 
+                              top_left_img_path=path1,
+                              bottom_right_img_path=path2)
+
     def run(self):
         self.mainloop()
+
+    
 
 
     
 def calibration_page_func():
     calib_app = CalibrationPage()
     calib_app.run()
+    #Thread(target=calib_app.run).start()
 
 if __name__ == '__main__' : 
     calibration_page_func()
