@@ -4,6 +4,8 @@ import sys
 from tkinter import messagebox
 from threading import Thread
 from calibration_page import calibration_page_func 
+import os
+from main_page import main_page_func
 
 parent_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(parent_dir / "backend"))
@@ -54,12 +56,12 @@ class StudentSideAppLoginPage(CTk):
         password = self.password_entry.get()
         rules_stat = self.checkbox.get()
         print(f'self.username = {username}\nself.password = {password}')
+        if rules_stat == 'on' :
+            # Perform authentication check
+            login_success = check_auth(username, password)
 
-        # Perform authentication check
-        login_success = check_auth(username, password)
-
-        # After the login attempt, update the UI on the main thread
-        self.after(0, self.finish_login, login_success)
+            # After the login attempt, update the UI on the main thread
+            self.after(0, self.finish_login, login_success)
 
     def finish_login(self, login_success):
         """Handles the final actions after the login process is done."""
@@ -73,7 +75,21 @@ class StudentSideAppLoginPage(CTk):
 
     def success_login(self):
         self.destroy()
-        calibration_page_func()
+        parnet_path = 'C:\\sap-project'
+        if not os.path.exists(parnet_path) :          # Check data folder exists
+            try:
+                os.mkdir(rf'{parnet_path}')           # Make data folder
+            except FileExistsError :
+                print(f'Directory {parnet_path}')
+            except PermissionError :
+                print('Premision Denied !')
+            calibration_page_func()
+        else:                                                           # If data folder and calibration data exists it run main page 
+            if os.path.exists(parnet_path+'\\calibration-data.txt'):    
+                main_page_func()
+            else:
+                calibration_page_func()                     # If calibration_data not exists, will create it 
+        
         sys.exit()
 
     def run(self):
