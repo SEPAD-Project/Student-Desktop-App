@@ -17,9 +17,9 @@ from func_save_data import save_calibration_data # type: ignore
 
 
 class CalibrationPage(CTk):
-    def __init__(self):
+    def __init__(self, udata):
         super().__init__()
-
+        self.udata = udata
 
         self.title('Calibration-Page')
         self.geometry('900x630')
@@ -117,6 +117,7 @@ class CalibrationPage(CTk):
                             ,path2=r'C:\\sap-project\\captured_image_2.jpg')
             self.next_page_button.configure(state='normal', text='Next Page')            
             self.destroy()
+            main_page_func(self.udata)
         else:
             messagebox.showerror('Calibration Error', 'You have not taken picture 1 or 2 !')
 
@@ -132,8 +133,8 @@ class CalibrationPage(CTk):
 
 
     
-def calibration_page_func():
-    calib_app = CalibrationPage()
+def calibration_page_func(udata):
+    calib_app = CalibrationPage(udata)
     calib_app.run()
     #Thread(target=calib_app.run).start()
 
