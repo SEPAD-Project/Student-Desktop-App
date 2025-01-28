@@ -65,15 +65,15 @@ class StudentSideAppLoginPage(CTk):
 
     def finish_login(self, login_success):
         """Handles the final actions after the login process is done."""
-        if login_success:
-            self.success_login() # Close the login window on successful login
+        if login_success[0]:
+            self.login_btn.configure(state="normal", text="Login")    # Re-enable the login button and reset the text in the main thread
+            self.success_login(login_success[1]) # Close the login window on successful login
         else:
             messagebox.showerror('Login Failed', 'Your username or password is incorrect!')
 
-        # Re-enable the login button and reset the text in the main thread
-        self.login_btn.configure(state="normal", text="Login")
 
-    def success_login(self):
+
+    def success_login(self, user_data):
         self.destroy()
         parnet_path = 'C:\\sap-project'
         if not os.path.exists(parnet_path) :          # Check data folder exists
@@ -83,13 +83,13 @@ class StudentSideAppLoginPage(CTk):
                 print(f'Directory {parnet_path}')
             except PermissionError :
                 print('Premision Denied !')
-            calibration_page_func()
+            calibration_page_func(user_data)
         else:                                                           # If data folder and calibration data exists it run main page 
             if os.path.exists(parnet_path+'\\calibration-data.txt'):    
-                main_page_func()
+                main_page_func(user_data)
             else:
-                calibration_page_func()                     # If calibration_data not exists, will create it 
-        
+                calibration_page_func(user_data)                     # If calibration_data not exists, will create it 
+        print(user_data)
         sys.exit()
 
     def run(self):
