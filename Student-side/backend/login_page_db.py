@@ -8,13 +8,12 @@ from searching import search_value # type: ignore
 
 
 def check_auth(username, password):
-    print('entered to check auth')
     result = search_value(value=username)
-    print(f'this is result {result}')
-    print(f'search result is {result}')
-    print(f'getted password is {password}')
-    if result[2] == password:
-        return [True, result]
+    if result != 'not found' :
+        if result[2] == password:
+            return [True, result]
+        else:
+            return [False, 'Wrong Pass']
     else:
-        return False
+        return [False, 'Wrong Username']
 
