@@ -11,7 +11,7 @@ class_code = 'Class1'
 text_to_send = "sended txt by user"
 
 # server url
-server_url = "http://127.0.0.1:5000/upload_text"
+server_url = "http://185.4.28.110:5005/upload_text"
 
 # sending data func
 def send_data_to_server(username, password, school_name, class_code, text):
