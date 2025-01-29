@@ -5,8 +5,8 @@ from tkinter import messagebox
 from threading import Thread
 from calibration_page import calibration_page_func 
 import os
-from main_page_teacher import main_page_func_student
 from requests import get
+from main_page import main_page_func_student
 
 parent_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(parent_dir / "backend"))
