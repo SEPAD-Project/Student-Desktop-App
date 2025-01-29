@@ -7,8 +7,11 @@ sys.path.append(str(parent_dir / "database-code"))
 from searching import search_value # type: ignore
 
 
-def check_auth(username, password):
-    result = search_value(value=username)
+def check_auth(username, password, person):
+
+    print(username)
+    result = search_value(value=username, person=person)
+    print(result)
     if result != 'not found' :
         if result[2] == password:
             return [True, result]
@@ -16,4 +19,3 @@ def check_auth(username, password):
             return [False, 'Wrong Pass']
     else:
         return [False, 'Wrong Username']
-
