@@ -6,6 +6,7 @@ from threading import Thread
 from calibration_page import calibration_page_func 
 import os
 from main_page import main_page_func
+from requests import get
 
 parent_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(parent_dir / "backend"))
@@ -46,9 +47,14 @@ class StudentSideAppLoginPage(CTk):
         # Disable the button and change its text
         self.login_btn.configure(state="disabled", text="Waiting...")
 
-        # Create and start the login thread
-        login_thread = Thread(target=self.login)
-        login_thread.start()
+        try:
+            # get('https://google.com')
+            # Create and start the login thread
+            login_thread = Thread(target=self.login)
+            login_thread.start()
+        except Exception:
+            messagebox.showerror("Internet Connectoin", 'You dont have Internet Connection !')
+            self.login_btn.configure(state="normal", text="Login")
 
     def login(self):
         """Handles the login process in a separate thread."""
@@ -56,12 +62,20 @@ class StudentSideAppLoginPage(CTk):
         password = self.password_entry.get()
         rules_stat = self.checkbox.get()
         print(f'self.username = {username}\nself.password = {password}')
-        if rules_stat == 'on' :
-            # Perform authentication check
-            login_success = check_auth(username, password)
+        if username != '' and password != '' :
+            if rules_stat == 'on' :
+                # Perform authentication check
+                login_success = check_auth(username, password)
+                print(login_success)
+                # After the login attempt, update the UI on the main thread
+                self.after(0, self.finish_login, login_success)
+            else:
+                messagebox.showerror("Error", 'You have not Agreed to our terms and condition')
+                self.login_btn.configure(state="normal", text="Login")         
 
-            # After the login attempt, update the UI on the main thread
-            self.after(0, self.finish_login, login_success)
+        else:
+            messagebox.showerror("Error", 'Username or passwrod cant be empty !')
+            self.login_btn.configure(state="normal", text="Login")
 
     def finish_login(self, login_success):
         """Handles the final actions after the login process is done."""
@@ -70,6 +84,8 @@ class StudentSideAppLoginPage(CTk):
             self.success_login(login_success[1]) # Close the login window on successful login
         else:
             messagebox.showerror('Login Failed', 'Your username or password is incorrect!')
+            self.login_btn.configure(state="normal", text="Login")
+
 
 
 
