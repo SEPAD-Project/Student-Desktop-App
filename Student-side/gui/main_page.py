@@ -179,13 +179,13 @@ class MainPage(CTk):
 
 
 
-def main_page_func(udata):
+def main_page_func_student(udata):
     app = MainPage(udata)
     Thread(target=app.run()).start()
 
 
 
 if __name__ == "__main__":
-    main_page_func(('abolfazl', 'rashidian', 'supsec', 'testus', 1052, 'hnsch1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
+    main_page_func_student(('abolfazl', 'rashidian', 'supsec', 'testus', 1052, 'hnsch1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
 
 

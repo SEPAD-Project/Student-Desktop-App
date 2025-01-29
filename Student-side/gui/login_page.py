@@ -5,7 +5,7 @@ from tkinter import messagebox
 from threading import Thread
 from calibration_page import calibration_page_func 
 import os
-from main_page import main_page_func
+from main_page_teacher import main_page_func_student
 from requests import get
 
 parent_dir = Path(__file__).resolve().parent.parent
@@ -16,7 +16,7 @@ from login_page_db import check_auth
 parent_dir = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(parent_dir / "Teacher-side/gui"))
 
-from select_class_page import select_class_page
+from select_class_page import select_class_page_func
 
 class StudentSideAppLoginPage(CTk):
     def __init__(self):
@@ -148,13 +148,14 @@ class StudentSideAppLoginPage(CTk):
                 calibration_page_func(user_data)
             else:                                                           # If data folder and calibration data exists it run main page 
                 if os.path.exists(parnet_path+'\\calibration-data.txt'):    
-                    main_page_func(user_data)
+                    main_page_func_student(user_data)
                 else:
                     calibration_page_func(user_data)                     # If calibration_data not exists, will create it 
             print(user_data)
             sys.exit()
         else:
-            select_class_page(user_data)
+            select_class_page_func(user_data)
+            sys.exit()
 
     def run(self):
         self.mainloop()
