@@ -6,7 +6,7 @@ from time import sleep
 from webbrowser import open
 import os
 from tkinter import messagebox
-from main_page import main_page_func
+from main_page import main_page_func_student
 from pathlib import Path
 import sys
 
@@ -117,7 +117,7 @@ class CalibrationPage(CTk):
                             ,path2=r'C:\\sap-project\\captured_image_2.jpg')
             self.next_page_button.configure(state='normal', text='Next Page')            
             self.destroy()
-            main_page_func(self.udata)
+            main_page_func_student(self.udata)
         else:
             messagebox.showerror('Calibration Error', 'You have not taken picture 1 or 2 !')
 
