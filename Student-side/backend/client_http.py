@@ -4,10 +4,10 @@ import time
 curr_time = time.strftime("%H:%M:%S", time.localtime())
 
 # info
-username = 'testus'
-password = 'supsec'
-school_name = 'SchoolA'
-class_code = 'Class1'
+username = 'Abolfazl'
+password = 'pass'
+school_name = 'hn1'
+class_code = '1052'
 text_to_send = "sended txt by user"
 
 # server url
@@ -24,11 +24,11 @@ def send_data_to_server(username, password, school_name, class_code, text):
     }
     response = requests.post(server_url, data=payload)
     if response.status_code == 200:
-        print('Sended')
+        print('STATUS SENDED')
     else:
-        print('Error')
+        print('ERROR WHILE SENDING STATUS')
 
 # sending data each 30s
 # while True:
-#     send_data_to_server(username, password, school_name, class_code, text_to_send)
-#     time.sleep(30)
+# send_data_to_server(username, password, school_name, class_code, text_to_send)
+# time.sleep(30)

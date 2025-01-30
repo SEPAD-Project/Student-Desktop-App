@@ -116,7 +116,7 @@ class MainPage(CTk):
         ctime = time.strftime("%H:%M:%S", time.localtime())
         self.txt = f'{looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame)}-{ctime}'
         print(self.txt)
-        print(self.odd_even)
+        print(f'this is odd - even  :{self.odd_even}')
         if self.odd_even % 2 == 0:
             self.sender_func(self.txt)
         self.after(5000, self.generating_result)
@@ -186,6 +186,6 @@ def main_page_func_student(udata):
 
 
 if __name__ == "__main__":
-    main_page_func_student(('abolfazl', 'rashidian', 'supsec', 'testus', 1052, 'hnsch1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
+    main_page_func_student(('abolfazl', 'rashidian', 'pass', 'Abolfazl', 1052, 'hn1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
 
 
