@@ -11,7 +11,7 @@ import time
 parent_dir = Path(__file__).resolve().parent.parent.parent.parent
 print(parent_dir)
 sys.path.append(str(parent_dir / "Head-Position-Estimination/looking_result/"))
-sys.path.append(str(parent_dir / "client-side/student-side/backend"))
+sys.path.append(str(parent_dir / "Desktop-App/student-side/backend"))
 
 from func_looking_result import looking_result # type: ignore
 from client_http import send_data_to_server
@@ -46,9 +46,9 @@ class MainPage(CTk):
         self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'), command=self.start_btn_func)
 
         # adding user data (self.udata) to textbox
-        self.user_detail_textbox.delete(1.0, END)
-        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[4]}\nSchool : {self.udata[5]}\nNational code : {self.udata[7]}'
-        self.user_detail_textbox.insert(1.0, text=self.text) # name, family, password, username, class, school, uid, national_code
+        self.user_detail_textbox.delete(1.0, END) # student_name, student_family, student_password, class_code, school_code, student_national_code class FROM students WHERE student_national_code
+        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[3]}\nSchool Code : {self.udata[4]}\nNational code : {self.udata[5]}'
+        self.user_detail_textbox.insert(1.0, text=self.text) 
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
         self.camera_label.grid(        row=0, column=0, rowspan=4)
