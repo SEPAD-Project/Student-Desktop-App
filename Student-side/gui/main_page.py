@@ -10,10 +10,10 @@ import time
 
 parent_dir = Path(__file__).resolve().parent.parent.parent.parent
 print(parent_dir)
-sys.path.append(str(parent_dir / "Head-Position-Estimination/looking_result/"))
+sys.path.append(str(parent_dir / "Head-Position-Estimation/looking_result/"))
 sys.path.append(str(parent_dir / "Desktop-App/student-side/backend"))
 
-from func_looking_result import looking_result # type: ignore
+from func_looking_result import looking_result 
 from client_http import send_data_to_server
 
 class MainPage(CTk):

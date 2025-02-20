@@ -4,3 +4,6 @@ pillow
 mysql-connector-python
 requests
 flask
+cryptography
+pillow # notif
+numpy # notif
