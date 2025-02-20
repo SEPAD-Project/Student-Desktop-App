@@ -5,4 +5,4 @@ Student-side/backend/__pycache__/
 Teacher-side/backend/__pycache__/get_students.cpython-312.pyc
 Teacher-side/gui/__pycache__/select_class_page.cpython-312.pyc
 Teacher-side/gui/__pycache__/main_page_teacher.cpython-312.pyc
-test_file
+test_file.py
