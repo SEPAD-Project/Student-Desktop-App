@@ -5,7 +5,7 @@ import os
 from threading import Thread
 from pathlib import Path
 import sys
-from scapy.all import ICMP, IP, sr1
+from ping3 import ping
 import time
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/looking_result/"))
@@ -112,8 +112,11 @@ class MainPage(CTk):
 
     def generating_result(self):
         # print('entered')
+        from time import sleep
         current_time = time.strftime("%H:%M:%S", time.localtime())
         reference_image = r"C:\sap-project\registered_image.jpg"
+        # looking_code = Thread(target=looking_result, kwargs={'verifying_image_path':reference_image, 'frame':frame}).start()
+        sleep(2)
         self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}-{current_time}'
         print(f'final message : {self.txt}')
         # print(f'this is odd - even  :{self.odd_even}')
@@ -122,24 +125,21 @@ class MainPage(CTk):
         self.after(5000, self.generating_result)
     
     def pinging(self):
-
-        packet = IP(dst='www.google.com')/ICMP() # Make a ICMP packet
-
-        start_time = time.time()
-        response = sr1(packet, timeout=2, verbose=0)
-        end_time = time.time()
-
-        if response:
-            ping = f'{(end_time - start_time) * 1000:.2f}ms'
-                # print(ping)
-            self.current_ping_status_entry.configure(state=NORMAL)
-            self.current_ping_status_entry.delete(0, END)
-            self.current_ping_status_entry.insert(END, ping)
+        response_time = ping('google.com', unit='ms')
+        if response_time is not None:
+            response_time = f"{response_time:.2f} ms"
         else:
-            ping = 'Faild'
+            response_time = f"Failed"
+
+        if response_time:
             self.current_ping_status_entry.configure(state=NORMAL)
             self.current_ping_status_entry.delete(0, END)
-            self.current_ping_status_entry.insert(END, ping)
+            self.current_ping_status_entry.insert(END, response_time)
+        else:
+            response_time == 'Failed'
+            self.current_ping_status_entry.configure(state=NORMAL)
+            self.current_ping_status_entry.delete(0, END)
+            self.current_ping_status_entry.insert(END, response_time)
         self.current_ping_status_entry.configure(state=DISABLED)
 
         self.after(1000, self.pinging)
