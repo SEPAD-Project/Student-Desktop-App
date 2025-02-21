@@ -8,17 +8,16 @@ import sys
 from scapy.all import ICMP, IP, sr1
 import time
 
-parent_dir = Path(__file__).resolve().parent.parent.parent.parent
-print(parent_dir)
-sys.path.append(str(parent_dir / "Head-Position-Estimation/looking_result/"))
-sys.path.append(str(parent_dir / "Desktop-App/student-side/backend"))
-
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/looking_result/"))
 from func_looking_result import looking_result 
+
+sys.path.append(str(Path(__file__).resolve().parent.parent / "backend"))
 from client_http import send_data_to_server
 
 class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
+        cv2.setLogLevel(0)
         self.udata = udata
         self.odd_even = 1
         self.title('Main-Page')
@@ -46,7 +45,7 @@ class MainPage(CTk):
         self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'), command=self.start_btn_func)
 
         # adding user data (self.udata) to textbox
-        self.user_detail_textbox.delete(1.0, END) # student_name, student_family, student_password, class_code, school_code, student_national_code class FROM students WHERE student_national_code
+        self.user_detail_textbox.delete(1.0, END) # #student_name, student_family, student_password, class_code, school_code, student_national_code
         self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[3]}\nSchool Code : {self.udata[4]}\nNational code : {self.udata[5]}'
         self.user_detail_textbox.insert(1.0, text=self.text) 
         self.user_detail_textbox.configure(state=DISABLED)
@@ -113,17 +112,18 @@ class MainPage(CTk):
 
     def generating_result(self):
         # print('entered')
-        ctime = time.strftime("%H:%M:%S", time.localtime())
-        self.txt = f'{looking_result(data_path=r'C:\\sap-project\\calibration-data.txt', frame=frame)}-{ctime}'
-        print(self.txt)
-        print(f'this is odd - even  :{self.odd_even}')
+        current_time = time.strftime("%H:%M:%S", time.localtime())
+        reference_image = r"C:\sap-project\registered_image.jpg"
+        self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}-{current_time}'
+        print(f'final message : {self.txt}')
+        # print(f'this is odd - even  :{self.odd_even}')
         if self.odd_even % 2 == 0:
             self.sender_func(self.txt)
         self.after(5000, self.generating_result)
     
     def pinging(self):
 
-        packet = IP(dst='google.com')/ICMP() # Make a ICMP packet
+        packet = IP(dst='www.google.com')/ICMP() # Make a ICMP packet
 
         start_time = time.time()
         response = sr1(packet, timeout=2, verbose=0)
@@ -146,7 +146,7 @@ class MainPage(CTk):
 
      
 
-    def start_btn_func(self): #name, family, password, username, class, school, uid, national_code
+    def start_btn_func(self): #student_name, student_family, student_password, class_code, school_code, student_national_code
         self.odd_even+=1
         if self.odd_even % 2 == 0:
             self.current_connection_status_entry.configure(state=NORMAL)
@@ -185,7 +185,7 @@ def main_page_func_student(udata):
 
 
 
-if __name__ == "__main__":
-    main_page_func_student(('abolfazl', 'rashidian', 'pass', 'Abolfazl', 1052, 'hn1', 984589, 929555555)) #name, family, password, username, class, school, uid, national_code
+if __name__ == "__main__": # student_name, student_family, student_password, class_code, school_code, student_national_code
+    main_page_func_student(('abolfazl', 'rashidian', 'pass' ,'1052', 'hn1', '092333'))
 
 

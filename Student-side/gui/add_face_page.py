@@ -6,13 +6,13 @@ from time import sleep
 from webbrowser import open
 import os
 from tkinter import messagebox
-# from main_page import main_page_func_student
+from main_page import main_page_func_student
 from pathlib import Path
 import sys
 
-# parent_dir = Path(__file__).resolve().parent.parent.parent.parent
-# sys.path.append(str(parent_dir / ""))
-
+sys.path.append(str
+                (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
+from compare import compare_faces
 
 class AddFacePage(CTk):
     def __init__(self, udata):
@@ -53,7 +53,8 @@ class AddFacePage(CTk):
         self.recheck_button.grid(   row=2, column=1, padx=(20,0), sticky='ensw')
         self.add_face_button.grid (row=3, column=1, padx=(20,0), sticky='ew')
         self.close_button.grid(row=4, column=0, columnspan=3,sticky='ew')
-        self.face_frame = ''
+        self.face_frame = None
+        self.taken_image = None
         Thread(target=self.start_video_stream).start()
 
     # starting camera with default camera index 
@@ -103,26 +104,38 @@ class AddFacePage(CTk):
 
     def capture_image(self):
         ret, self.face_frame = self.cap.read()
+        print(f'face frame type : {type(self.face_frame)}')
         # print(frame)
         if ret:
-            taken_image = Image.fromarray(self.face_frame)
+            self.taken_image = Image.fromarray(self.face_frame)
+            print(f'TAKEN IMAGE type : {type(self.taken_image)}')
 
         
     def adding_face_func(self):
-        if self.face_frame != '' :
-            self.add_face_button.configure(state='disabled', text='Adding Face')
-            # cheking and adding face
-            if True:
-                self.filename = fr'C:\\sap-project\\registered_image.jpg'
-                cv2.imwrite(self.filename, self.face_frame)
-                print(f'Image saved as {self.filename}')
-
-            self.add_face_button.configure(state='normal', text='Add Face')            
-            self.destroy()
-            # main_page_func_student(self.udata)
-        else:
-            messagebox.showerror('Error', 'You have not taken picture !')
-
+        def add_face_thread():
+            if self.face_frame is not None:
+                self.add_face_button.configure(state='disabled', text='Adding Face')
+                # cheking and adding face
+                main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_173759.jpg"
+                status = [True, True]# compare_faces(self.face_frame, main_image)
+                print(status)
+                if status[0]:
+                    if status[1] :
+                        self.filename = fr'C:\\sap-project\\registered_image.jpg'
+                        cv2.imwrite(self.filename, self.face_frame)
+                        print(f'Image saved as {self.filename}')
+                        self.destroy()
+                        main_page_func_student(self.udata)
+                    else:
+                        messagebox.showwarning('Recognition', 'Your image does not match the image in the system !')
+                else :
+                    messagebox.showwarning('Recognition', 'An Error Occured !')
+                    print(status[2])
+                self.add_face_button.configure(state='normal', text='Add Face')            
+                
+            else:
+                messagebox.showerror('Error', 'You have not taken picture !')
+        Thread(target=add_face_thread).start()
 
 
     def run(self):
