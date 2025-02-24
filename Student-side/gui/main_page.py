@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 from ping3 import ping
 import time
+from tkinter import messagebox
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/looking_result/"))
 from func_looking_result import looking_result 
@@ -18,7 +19,14 @@ class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
         cv2.setLogLevel(0)
+        reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
+
         self.udata = udata
+        self.unic_school_code = self.udata[3] # uinc_code
+        self.school_name = self.udata[5]
+        self.school_code, self.class_name = reverse_class_code(self.udata[3])
+
+
         self.odd_even = 1
         self.title('Main-Page')
         self.geometry('1000x650')
@@ -46,7 +54,7 @@ class MainPage(CTk):
 
         # adding user data (self.udata) to textbox
         self.user_detail_textbox.delete(1.0, END) # #student_name, student_family, student_password, class_code, school_code, student_national_code
-        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.udata[3]}\nSchool Code : {self.udata[4]}\nNational code : {self.udata[5]}'
+        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.class_name}\nSchool Name : {self.school_name}\nNational code : {self.udata[4]}'
         self.user_detail_textbox.insert(1.0, text=self.text) 
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
@@ -69,10 +77,9 @@ class MainPage(CTk):
 
     # starting camera with default camera index 
     def start_video_stream(self):
-        default_camera_index = 0
-        self.cap = cv2.VideoCapture(default_camera_index)
-        self.update_video()
-        self.generating_result()
+        self.cap = cv2.VideoCapture(0)
+        Thread(target=self.update_video).start()
+        Thread(target=self.generating_result).start()
     # getting connected camera to system by testing their index in VideoCapture
     def get_available_cameras(self):
         cameras = {}
@@ -146,7 +153,7 @@ class MainPage(CTk):
 
      
 
-    def start_btn_func(self): #student_name, student_family, student_password, class_code, school_code, student_national_code
+    def start_btn_func(self): #student_name, student_family, student_password, class_code, school_code, student_national_code, class_name
         self.odd_even+=1
         if self.odd_even % 2 == 0:
             self.current_connection_status_entry.configure(state=NORMAL)
@@ -165,9 +172,20 @@ class MainPage(CTk):
 
     def sender_func(self, txt):   
         data = self.udata
-        send_data_to_server(username=data[3], password=data[2], 
-                            school_name=data[5], class_code=data[4], text=txt)
-        
+        try:
+            print(data)
+            print(f'username : {data[4]}\npassword : {data[2]}\nclass_code : {self.class_name}\nschool_name : {self.school_code}\ntext : {txt}')
+            send_data_to_server(username=data[4], password=data[2], 
+                                school_name=self.school_code, class_code=self.class_name, text=txt)
+        except Exception as e:
+            self.odd_even+=1
+            messagebox.showwarning('Connection Error', 'Can not join to class at this time!\nTry again later.')
+            print(e)
+            self.current_connection_status_entry.configure(state=NORMAL)
+            self.current_connection_status_entry.delete(0, END)
+            self.current_connection_status_entry.insert(0, 'OFFLINE')
+            self.current_connection_status_entry.configure(state=DISABLED)
+            self.start_button.configure(text="Start", fg_color='#1F6AA5', hover_color='#144870')
         # if self.odd_even % 2 == 1:
         #     self.after(5000, self.sender_func())
 
@@ -187,5 +205,6 @@ def main_page_func_student(udata):
 
 if __name__ == "__main__": # student_name, student_family, student_password, class_code, school_code, student_national_code
     main_page_func_student(('abolfazl', 'rashidian', 'pass' ,'1052', 'hn1', '092333'))
+
 
 
