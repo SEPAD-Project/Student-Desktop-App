@@ -7,3 +7,4 @@ flask
 cryptography
 pillow # notif
 numpy # notif
+pyftpdlib
