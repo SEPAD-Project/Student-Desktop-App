@@ -112,6 +112,7 @@ class AddFacePage(CTk):
 
         
     def adding_face_func(self):
+        self.filename = fr'C:\\sap-project\\registered_image.jpg'
         def add_face_thread():
             if self.face_frame is not None:
                 self.add_face_button.configure(state='disabled', text='Adding Face')
@@ -121,7 +122,6 @@ class AddFacePage(CTk):
                 print(status)
                 if status[0]:
                     if status[1] :
-                        self.filename = fr'C:\\sap-project\\registered_image.jpg'
                         cv2.imwrite(self.filename, self.face_frame)
                         print(f'Image saved as {self.filename}')
                         self.destroy()
