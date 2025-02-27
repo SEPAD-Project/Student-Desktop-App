@@ -8,6 +8,8 @@ import sys
 from ping3 import ping
 import time
 from tkinter import messagebox
+from datetime import datetime
+
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/looking_result/"))
 from func_looking_result import looking_result 
@@ -22,7 +24,7 @@ class MainPage(CTk):
         reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
 
         self.udata = udata
-        self.unic_school_code = self.udata[3] # uinc_code
+        self.unic_school_code = self.udata[3] # unic_code
         self.school_name = self.udata[5]
         self.school_code, self.class_name = reverse_class_code(self.udata[3])
 
@@ -48,7 +50,6 @@ class MainPage(CTk):
         self.rechech_availale_camera = CTkButton(self.elements_frame, text='Recheck', font=('montserrat', 20, 'bold'), height=40, border_color='white', border_width=2, command=self.recheck_button)
         self.connection_status_ping_lbl = CTkLabel(self.elements_frame, text='Connection Status / Ping' , font=('montserrat', 25))
         self.current_connection_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
-        # self.current_ping_status_lbl = CTkLabel(self.elements_frame, text='PING :' , font=('montserrat', 30))
         self.current_ping_status_entry = CTkEntry(self.elements_frame , font=('montserrat', 20, 'bold'), border_color='white', border_width=2)
         self.start_button = CTkButton(self.elements_frame, height=50, text='START', font=('montserrat', 20, 'bold'), command=self.start_btn_func)
 
@@ -65,7 +66,6 @@ class MainPage(CTk):
         self.rechech_availale_camera.grid(row=3, column=1, padx=(20, 0), sticky='we', pady=5, columnspan=2)
         self.connection_status_ping_lbl.grid(  row=4, column=0,                sticky='w', pady=(15, 0))
         self.current_connection_status_entry.grid(row=4, column=1, padx=(20,0),   sticky='we',pady=(15, 0))
-        # self.current_ping_status_lbl.grid(  row=5, column=0,                sticky='w', pady=(15, 0))
         self.current_ping_status_entry.grid(row=4, column=2, padx=(20,0),   sticky='we',pady=(15, 0))
         self.start_button.grid(        row=6, column=0, columnspan=3,  sticky='ew', pady=(15, 0))
         
@@ -90,7 +90,6 @@ class MainPage(CTk):
                 cameras[name] = i
                 cap.release()
         self.available_camera = cameras if cameras else {'No Camera found' : -1}
-        # print(self.available_camera)
     # changing camera by releasing and reopening with VideoCapture
     def change_camera(self, camera_name):
         camera_index = self.available_camera.get(camera_name, -1)
@@ -114,22 +113,17 @@ class MainPage(CTk):
     def recheck_button(self):
         Thread(target=self.get_available_cameras).start()
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
-        # print(self.available_camera)
-
 
     def generating_result(self):
-        # print('entered')
-        from time import sleep
-        current_time = time.strftime("%H:%M:%S", time.localtime())
-        reference_image = r"C:\sap-project\registered_image.jpg"
-        # looking_code = Thread(target=looking_result, kwargs={'verifying_image_path':reference_image, 'frame':frame}).start()
-        sleep(2)
-        self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}-{current_time}'
-        print(f'final message : {self.txt}')
-        # print(f'this is odd - even  :{self.odd_even}')
         if self.odd_even % 2 == 0:
+            current_time = datetime.now().strftime("%Y-%m-%d|=|%H:%M:%S")
+            reference_image = r"C:\sap-project\registered_image.jpg"
+            time.sleep(2)
+            self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}-{current_time}'
+            print(f'final message : {self.txt}')
+
             self.sender_func(self.txt)
-        self.after(5000, self.generating_result)
+        self.after(10000, self.generating_result)
     
     def pinging(self):
         response_time = ping('google.com', unit='ms')
@@ -186,10 +180,7 @@ class MainPage(CTk):
             self.current_connection_status_entry.insert(0, 'OFFLINE')
             self.current_connection_status_entry.configure(state=DISABLED)
             self.start_button.configure(text="Start", fg_color='#1F6AA5', hover_color='#144870')
-        # if self.odd_even % 2 == 1:
-        #     self.after(5000, self.sender_func())
 
-        
 
 
     def run(self):
@@ -204,7 +195,13 @@ def main_page_func_student(udata):
 
 
 if __name__ == "__main__": # student_name, student_family, student_password, class_code, school_code, student_national_code
-    main_page_func_student(('abolfazl', 'rashidian', 'pass' ,'1052', 'hn1', '092333'))
 
-
-
+    test_data = (
+        'Abolfazl',
+        'Rashidian',
+        'stpass',
+        '7b#52-42-54-4a',  # Example encoded class info
+        '09295',
+        'hn1 '
+    )
+    main_page_func_student(test_data)
