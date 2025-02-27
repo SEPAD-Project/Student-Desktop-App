@@ -92,8 +92,8 @@ class AddFacePage(CTk):
                 cameras[name] = i
                 cap.release()
         self.available_camera = cameras if cameras else {'No Camera found' : -1}
-        # print(self.available_camera)
 
+    # checking available cameras
     def recheck_button_func(self):
         Thread(target=self.get_available_cameras).start()
         def waiter():
@@ -102,23 +102,21 @@ class AddFacePage(CTk):
             sleep(3)
         Thread(target=waiter).start()
 
+    # capturing image 
     def capture_image(self):
         ret, self.face_frame = self.cap.read()
-        print(f'face frame type : {type(self.face_frame)}')
-        # print(frame)
         if ret:
             self.taken_image = Image.fromarray(self.face_frame)
-            print(f'TAKEN IMAGE type : {type(self.taken_image)}')
 
-        
+    # adding face after comparing two frames 
     def adding_face_func(self):
         self.filename = fr'C:\\sap-project\\registered_image.jpg'
         def add_face_thread():
             if self.face_frame is not None:
                 self.add_face_button.configure(state='disabled', text='Adding Face')
                 # cheking and adding face
-                main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_173759.jpg"
-                status = [True, True]# compare_faces(self.face_frame, main_image)
+                main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_175557.jpg"
+                status = [True, True]#compare_faces(self.face_frame, main_image)  # returns [True, True] if two picture were same
                 print(status)
                 if status[0]:
                     if status[1] :
@@ -141,14 +139,11 @@ class AddFacePage(CTk):
     def run(self):
         self.mainloop()
 
-    
-
 
     
 def add_face_page_func(udata):
     add_face_app = AddFacePage(udata)
     add_face_app.run()
-    #Thread(target=calib_app.run).start()
 
 if __name__ == '__main__' : 
     add_face_page_func(udata='x')
