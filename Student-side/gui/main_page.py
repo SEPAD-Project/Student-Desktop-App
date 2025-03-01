@@ -116,10 +116,10 @@ class MainPage(CTk):
 
     def generating_result(self):
         if self.odd_even % 2 == 0:
-            current_time = datetime.now().strftime("%Y-%m-%d|=|%H:%M:%S")
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             reference_image = r"C:\sap-project\registered_image.jpg"
             time.sleep(2)
-            self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}-{current_time}'
+            self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}|=|{current_time}'
             print(f'final message : {self.txt}')
 
             self.sender_func(self.txt)
