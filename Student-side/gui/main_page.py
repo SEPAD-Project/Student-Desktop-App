@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head
 from func_looking_result import looking_result 
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "backend"))
-from client_http import send_data_to_server
+from looking_result_sender.py import send_data_to_server
 
 class MainPage(CTk):
     def __init__(self, udata):
