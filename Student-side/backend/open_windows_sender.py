@@ -85,10 +85,10 @@ def main_loop(server_url, school, class_name, student_id, interval=5):
 
 if __name__ == "__main__":
     # Configuration
-    SERVER_URL = "http://localhost:5000"
-    SCHOOL_NAME = "Test School"
-    CLASS_NAME = "Class A"
-    STUDENT_ID = "STD123"
+    SERVER_URL = "http://localhost:5002"
+    SCHOOL_NAME = "123"
+    CLASS_NAME = "1052"
+    STUDENT_ID = "09295"
     
     # Run continuous loop
     # main_loop(SERVER_URL, SCHOOL_NAME, CLASS_NAME, STUDENT_ID)
