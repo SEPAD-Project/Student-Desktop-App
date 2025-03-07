@@ -16,6 +16,7 @@ from func_looking_result import looking_result
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "backend"))
 from looking_result_sender.py import send_data_to_server
+from open_windows_sender import send_data
 
 class MainPage(CTk):
     def __init__(self, udata):
@@ -115,11 +116,16 @@ class MainPage(CTk):
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
 
     def generating_result(self):
+        SERVER_URL = "http://localhost:5002"
+        SCHOOL_NAME = self.school_code
+        CLASS_NAME = self.class_name
+        STUDENT_ID = self.udata[4]
         if self.odd_even % 2 == 0:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             reference_image = r"C:\sap-project\registered_image.jpg"
             time.sleep(2)
             self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}|=|{current_time}'
+            send_data(SERVER_URL, str(SCHOOL_NAME), str(CLASS_NAME), str(STUDENT_ID))
             print(f'final message : {self.txt}')
 
             self.sender_func(self.txt)
