@@ -85,7 +85,7 @@ def main_loop(server_url, school, class_name, student_id, interval=5):
 
 if __name__ == "__main__":
     # Configuration
-    SERVER_URL = "http://localhost:5002"
+    SERVER_URL = "http://185.4.28.110:5002"
     SCHOOL_NAME = "123"
     CLASS_NAME = "1052"
     STUDENT_ID = "09295"

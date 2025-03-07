@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head
 from func_looking_result import looking_result 
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "backend"))
-from looking_result_sender.py import send_data_to_server
+from looking_result_sender import send_data_to_server
 from open_windows_sender import send_data
 
 class MainPage(CTk):
@@ -116,7 +116,7 @@ class MainPage(CTk):
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
 
     def generating_result(self):
-        SERVER_URL = "http://localhost:5002"
+        SERVER_URL = "http://185.4.28.110:5002"
         SCHOOL_NAME = self.school_code
         CLASS_NAME = self.class_name
         STUDENT_ID = self.udata[4]

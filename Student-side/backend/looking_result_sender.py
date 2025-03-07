@@ -16,7 +16,7 @@ SCHOOL_NAME = os.getenv('APP_SCHOOL', 'hn1')
 CLASS_CODE = os.getenv('APP_CLASS', '1052')
 
 # Server configuration
-SERVER_URL = "http://127.0.0.1:5005/upload_text"
+SERVER_URL = "http://185.4.28.110:5005/upload_text"
 TIMEOUT = 10  # seconds
 MAX_RETRIES = 3
 REQUIRED_HEADER = {'X-Application': 'SchoolApp'}

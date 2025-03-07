@@ -134,6 +134,8 @@ class StudentSideAppLoginPage(CTk):
     def authenticate_user(self):
         """Authenticate user credentials"""
         try:
+            print(self.username_entry.get().strip())
+            print(self.password_entry.get().strip())
             return check_auth(
                 self.username_entry.get().strip(),
                 self.password_entry.get().strip(),
