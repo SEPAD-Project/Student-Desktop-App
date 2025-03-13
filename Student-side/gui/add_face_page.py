@@ -93,6 +93,13 @@ class AddFacePage(CTk):
                 cap.release()
         self.available_camera = cameras if cameras else {'No Camera found' : -1}
 
+    # getting image from server
+    def get_image(self):
+        ip = ''
+        port = ''
+        image_url = f'{ip}:{port}/get_image'
+        
+
     # checking available cameras
     def recheck_button_func(self):
         Thread(target=self.get_available_cameras).start()
