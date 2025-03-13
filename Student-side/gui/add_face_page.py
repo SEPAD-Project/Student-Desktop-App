@@ -98,7 +98,37 @@ class AddFacePage(CTk):
         ip = ''
         port = ''
         image_url = f'{ip}:{port}/get_image'
-        
+        import requests
+        import os
+
+        def download_image(image_url, save_path):
+            try:
+                # Send a GET request to the URL
+                response = requests.get(image_url, stream=True)
+                
+                # Check if the request was successful
+                if response.status_code == 200:
+                    # Open a file to save the image
+                    with open(save_path, 'wb') as file:
+                        for chunk in response.iter_content(1024):
+                            file.write(chunk)
+                    print(f"Image successfully downloaded and saved at {save_path}.")
+                else:
+                    print(f"Failed to download image. Status code: {response.status_code}")
+            except Exception as e:
+                print(f"Error downloading image: {e}")
+
+        # Example usage of the function
+        image_url = "https://example.com/path/to/your/image.jpg"
+        save_directory = "path/to/save/directory"
+        image_name = "downloaded_image.jpg"
+        save_path = os.path.join(save_directory, image_name)
+
+        # Ensure the save directory exists
+        os.makedirs(save_directory, exist_ok=True)
+
+        # Download the image
+        download_image(image_url, save_path)
 
     # checking available cameras
     def recheck_button_func(self):
