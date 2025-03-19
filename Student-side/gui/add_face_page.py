@@ -55,6 +55,7 @@ class AddFacePage(CTk):
         self.close_button.grid(row=4, column=0, columnspan=3,sticky='ew')
         self.face_frame = None
         self.taken_image = None
+        self.stat = True
         Thread(target=self.start_video_stream).start()
 
     # starting camera with default camera index 
@@ -65,15 +66,25 @@ class AddFacePage(CTk):
 
     # update video each 10ms
     def update_video(self):
-        ret, frame = self.cap.read()
-        if ret:
-            frame = cv2.resize(frame, (432, 324))
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            img = Image.fromarray(frame)
-            imagectk = CTkImage(light_image=img, size=(324, 243))
-            self.video_label.configure(image=imagectk)
-        self.after(10, self.update_video)
-
+        if self.stat:
+            try:
+                ret, frame = self.cap.read()
+                if ret:
+                    frame = cv2.resize(frame, (432, 324))
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    img = Image.fromarray(frame)
+                    imagectk = CTkImage(light_image=img, size=(324, 243))
+                    try:
+                        self.video_label.configure(image=imagectk)
+                    except Exception as er:
+                        print('SUP ER')
+                        print(er)
+                self.after(30, self.update_video)
+            except Exception as e:
+                print('E')
+                print(e)
+        else:
+            self.cap.release()
     # changing camera by releasing and reopening with VideoCapture
     def change_camera(self, camera_name):
         camera_index = self.available_camera.get(camera_name, -1)
@@ -93,46 +104,10 @@ class AddFacePage(CTk):
                 cap.release()
         self.available_camera = cameras if cameras else {'No Camera found' : -1}
 
-    # getting image from server
-    def get_image(self):
-        ip = ''
-        port = ''
-        image_url = f'{ip}:{port}/get_image'
-        import requests
-        import os
-
-        def download_image(image_url, save_path):
-            try:
-                # Send a GET request to the URL
-                response = requests.get(image_url, stream=True)
-                
-                # Check if the request was successful
-                if response.status_code == 200:
-                    # Open a file to save the image
-                    with open(save_path, 'wb') as file:
-                        for chunk in response.iter_content(1024):
-                            file.write(chunk)
-                    print(f"Image successfully downloaded and saved at {save_path}.")
-                else:
-                    print(f"Failed to download image. Status code: {response.status_code}")
-            except Exception as e:
-                print(f"Error downloading image: {e}")
-
-        # Example usage of the function
-        image_url = "https://example.com/path/to/your/image.jpg"
-        save_directory = "path/to/save/directory"
-        image_name = "downloaded_image.jpg"
-        save_path = os.path.join(save_directory, image_name)
-
-        # Ensure the save directory exists
-        os.makedirs(save_directory, exist_ok=True)
-
-        # Download the image
-        download_image(image_url, save_path)
 
     # checking available cameras
     def recheck_button_func(self):
-        Thread(target=self.get_available_cameras).start()
+        Thread(target=self.get_available_cameras, daemon=True).start()
         def waiter():
             self.camera_selectbox.set(list(self.available_camera.keys())[0] if self.available_camera else 'No Camera found')
             self.camera_selectbox.configure(values=list(self.available_camera.keys()))
@@ -148,18 +123,24 @@ class AddFacePage(CTk):
     # adding face after comparing two frames 
     def adding_face_func(self):
         self.filename = fr'C:\\sap-project\\registered_image.jpg'
+        main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_175557.jpg"
         def add_face_thread():
             if self.face_frame is not None:
                 self.add_face_button.configure(state='disabled', text='Adding Face')
                 # cheking and adding face
-                main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_175557.jpg"
                 status = [True, True]#compare_faces(self.face_frame, main_image)  # returns [True, True] if two picture were same
                 print(status)
                 if status[0]:
                     if status[1] :
                         cv2.imwrite(self.filename, self.face_frame)
                         print(f'Image saved as {self.filename}')
-                        self.destroy()
+                        self.stat=False
+                        sleep(1)
+                        try:
+                            self.destroy()
+                        except Exception as ef:
+                            print('rf')
+
                         main_page_func_student(self.udata)
                     else:
                         messagebox.showwarning('Recognition', 'Your image does not match the image in the system !')
@@ -170,7 +151,7 @@ class AddFacePage(CTk):
                 
             else:
                 messagebox.showerror('Error', 'You have not taken picture !')
-        Thread(target=add_face_thread).start()
+        add_face_thread
 
 
     def run(self):
@@ -183,4 +164,12 @@ def add_face_page_func(udata):
     add_face_app.run()
 
 if __name__ == '__main__' : 
-    add_face_page_func(udata='x')
+    test_data = [
+        'Abolfazl',
+        'Rashidian',
+        'stpass',
+        '7b#52-42-54-4a',  # Example encoded class info
+        '09295',
+        'hn1 '
+    ]
+    add_face_page_func(udata=test_data)
