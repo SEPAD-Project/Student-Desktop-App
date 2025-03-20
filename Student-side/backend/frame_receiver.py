@@ -45,3 +45,18 @@ def save_frames_as_image(frames, output_path):
     else:
         print("Failed to decode the image.")
 
+# Example usage
+if __name__ == "__main__":
+    # Input data
+    school_code = "12345"
+    class_name = "10A"
+    national_code = "9876543210"
+    
+    # Output path to save the image
+    output_path = "student_image.jpg"
+    
+    # Step 1: Get frames from the API
+    frames = get_frames_from_api(school_code, class_name, national_code)
+    
+    # Step 2: Save frames as an image
+    save_frames_as_image(frames, output_path)
