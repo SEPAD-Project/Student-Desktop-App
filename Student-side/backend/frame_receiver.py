@@ -26,3 +26,22 @@ def get_frames_from_api(school_code, class_name, national_code):
         print(f"Error: {response.status_code} - {response.json().get('error')}")
         return None
 
+# Function to convert frames to an image and save it
+def save_frames_as_image(frames, output_path):
+    if frames is None:
+        print("No frames received. Cannot save image.")
+        return
+    
+    # Convert the raw frames (bytes) to a NumPy array
+    image_array = np.frombuffer(frames, dtype=np.uint8)
+    
+    # Decode the image array using OpenCV
+    image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+    
+    if image is not None:
+        # Save the image to the specified output path
+        cv2.imwrite(output_path, image)
+        print(f"Image saved successfully at: {output_path}")
+    else:
+        print("Failed to decode the image.")
+
