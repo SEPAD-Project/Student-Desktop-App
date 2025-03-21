@@ -9,6 +9,7 @@ from tkinter import messagebox
 from main_page import main_page_func_student
 from pathlib import Path
 import sys
+from frame_receiver import get_image
 
 sys.path.append(str
                 (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
@@ -119,31 +120,34 @@ class AddFacePage(CTk):
         ret, self.face_frame = self.cap.read()
         if ret:
             self.taken_image = Image.fromarray(self.face_frame)
-
     # adding face after comparing two frames 
     def adding_face_func(self):
+        unic_class_code = self.udata[3]
+        reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
+        original_school_code, original_class_name = reverse_class_code(unic_class_code)
         self.filename = fr'C:\\sap-project\\registered_image.jpg'
-        main_image = r"C:\Users\#AR\Desktop\New folder\cropped-20241107_175557.jpg"
         def add_face_thread():
             if self.face_frame is not None:
                 self.add_face_button.configure(state='disabled', text='Adding Face')
-                # cheking and adding face
-                status = [True, True]#compare_faces(self.face_frame, main_image)  # returns [True, True] if two picture were same
-                print(status)
-                if status[0]:
-                    if status[1] :
-                        cv2.imwrite(self.filename, self.face_frame)
-                        print(f'Image saved as {self.filename}')
-                        self.stat=False
-                        sleep(1)
-                        try:
-                            self.destroy()
-                        except Exception as ef:
-                            print('rf')
+                Thread(target=get_image, args=(original_school_code, original_class_name, self.udata[4]))
+                if os.path.exists(self.filename):
+                    # cheking and adding face
+                    status = [True, True]#compare_faces(self.face_frame, main_image)  # returns [True, True] if two picture were same
+                    print(status)
+                    if status[0]:
+                        if status[1] :
+                            cv2.imwrite(self.filename, self.face_frame)
+                            print(f'Image saved as {self.filename}')
+                            self.stat=False
+                            sleep(1)
+                            try:
+                                self.destroy()
+                            except Exception as ef:
+                                print('rf')
 
-                        main_page_func_student(self.udata)
-                    else:
-                        messagebox.showwarning('Recognition', 'Your image does not match the image in the system !')
+                            main_page_func_student(self.udata)
+                        else:
+                            messagebox.showwarning('Recognition', 'Your image does not match the image in the system !')
                 else :
                     messagebox.showwarning('Recognition', 'An Error Occured !')
                     print(status[2])
@@ -151,7 +155,7 @@ class AddFacePage(CTk):
                 
             else:
                 messagebox.showerror('Error', 'You have not taken picture !')
-        add_face_thread
+        add_face_thread()
 
 
     def run(self):
