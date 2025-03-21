@@ -5,7 +5,7 @@ import numpy as np
 # Function to send a request to the API and retrieve the image frames
 def get_frames_from_api(school_code, class_name, national_code):
     # API endpoint
-    url = "http://127.0.0.1:5000/get_student_image"
+    url = "http://127.0.0.1:5511/get_student_image"
     
     # JSON payload
     payload = {
@@ -27,7 +27,8 @@ def get_frames_from_api(school_code, class_name, national_code):
         return None
 
 # Function to convert frames to an image and save it
-def save_frames_as_image(frames, output_path):
+def save_frames_as_image(frames):
+    output_path = f'C://sap-project//registered_image.jpg'
     if frames is None:
         print("No frames received. Cannot save image.")
         return
@@ -45,18 +46,20 @@ def save_frames_as_image(frames, output_path):
     else:
         print("Failed to decode the image.")
 
-# Example usage
-if __name__ == "__main__":
-    # Input data
-    school_code = "12345"
-    class_name = "10A"
-    national_code = "9876543210"
-    
-    # Output path to save the image
-    output_path = "student_image.jpg"
-    
+
+def get_image(school_code, class_name, national_code):
+
     # Step 1: Get frames from the API
     frames = get_frames_from_api(school_code, class_name, national_code)
     
     # Step 2: Save frames as an image
-    save_frames_as_image(frames, output_path)
+    save_frames_as_image(frames)
+
+# Example usage
+if __name__ == "__main__":
+    # Input data
+    school_code = "zhn1"
+    class_name = "1052"
+    national_code = "09295"
+    
+    get_image(school_code, class_name, national_code)
