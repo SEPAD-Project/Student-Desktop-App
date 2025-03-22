@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTk, CTkButton, CTkLabel, CTkOptionMenu, CTkImage
 import cv2
 from PIL import Image, ImageTk
-from threading import Thread
+import threading
 from time import sleep
 from webbrowser import open
 import os
@@ -10,6 +10,8 @@ from main_page import main_page_func_student
 from pathlib import Path
 import sys
 from frame_receiver import get_image
+import queue
+from threading import Thread
 
 sys.path.append(str
                 (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
@@ -125,37 +127,54 @@ class AddFacePage(CTk):
         unic_class_code = self.udata[3]
         reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
         original_school_code, original_class_name = reverse_class_code(unic_class_code)
-        self.filename = fr'C:\\sap-project\\registered_image.jpg'
-        def add_face_thread():
-            if self.face_frame is not None:
-                self.add_face_button.configure(state='disabled', text='Adding Face')
-                Thread(target=get_image, args=(original_school_code, original_class_name, self.udata[4]))
-                if os.path.exists(self.filename):
-                    # cheking and adding face
-                    status = [True, True]#compare_faces(self.face_frame, main_image)  # returns [True, True] if two picture were same
-                    print(status)
-                    if status[0]:
-                        if status[1] :
-                            cv2.imwrite(self.filename, self.face_frame)
-                            print(f'Image saved as {self.filename}')
-                            self.stat=False
-                            sleep(1)
-                            try:
-                                self.destroy()
-                            except Exception as ef:
-                                print('rf')
-
-                            main_page_func_student(self.udata)
-                        else:
-                            messagebox.showwarning('Recognition', 'Your image does not match the image in the system !')
-                else :
-                    messagebox.showwarning('Recognition', 'An Error Occured !')
-                    print(status[2])
-                self.add_face_button.configure(state='normal', text='Add Face')            
+        self.real_image = "C:\\sap-project\\real_image.jpg"
+        self.registered_image = "C:\\sap-project\\registered_image.jpg"
+        
+        def add_face():
+            # disabling button
+            self.add_face_button.configure(state='disabled', text='Adding Face')
+            
+            # creating queue
+            result_queue = queue.Queue()
+            error_queue = queue.Queue()
+            
+            def download_and_compare():
+                try:
+                    if self.face_frame is None:
+                        error_queue.put("No image taken!")
+                        return
+                    
+                    # getting image from server in other thread
+                    download_thread = threading.Thread(target=get_image, args=(original_school_code, original_class_name, self.udata[4]))
+                    download_thread.start()
+                    download_thread.join()  # waiting for download complete
+                    
+                    if not os.path.exists(self.real_image):
+                        error_queue.put("Couldn't connect to server!")
+                        return
+                    
+                    # comparing pictures
+                    compare_result = compare_faces(self.face_frame, self.real_image)
+                    result_queue.put(compare_result)
+                    
+                    if compare_result[0] and compare_result[1]:
+                        # saving if it was same
+                        cv2.imwrite(self.registered_image, self.face_frame)
+                        print(f'Image saved as {self.registered_image}')
+                        sleep(1)
+                        result_queue.put("success")
+                    else:
+                        error_queue.put("Image does not match system records!")
                 
-            else:
-                messagebox.showerror('Error', 'You have not taken picture !')
-        add_face_thread()
+                except Exception as e:
+                    error_queue.put(f"Error: {str(e)}")
+                 
+            processing_thread = threading.Thread(target=download_and_compare)
+            processing_thread.start()
+
+
+        # calling function
+        add_face()
 
 
     def run(self):
