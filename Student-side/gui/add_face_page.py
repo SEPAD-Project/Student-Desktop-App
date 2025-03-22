@@ -9,9 +9,13 @@ from tkinter import messagebox
 from main_page import main_page_func_student
 from pathlib import Path
 import sys
-from frame_receiver import get_image
 import queue
 from threading import Thread
+
+sys.path.append(str
+                (Path(__file__).resolve().parent.parent / "backend"))
+
+from frame_receiver import get_image
 
 sys.path.append(str
                 (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
