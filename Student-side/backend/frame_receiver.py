@@ -15,7 +15,7 @@ def get_frames_from_api(school_code, class_name, national_code):
     }
     
     # Send POST request to the API
-    response = requests.post(url, json=payload)
+    response = requests.post(url, json=payload, timeout=10)
     
     # Check if the request was successful
     if response.status_code == 200:
@@ -28,7 +28,7 @@ def get_frames_from_api(school_code, class_name, national_code):
 
 # Function to convert frames to an image and save it
 def save_frames_as_image(frames):
-    output_path = f'C://sap-project//registered_image.jpg'
+    output_path = f'C://sap-project//real_image.jpg'
     if frames is None:
         print("No frames received. Cannot save image.")
         return
@@ -58,7 +58,7 @@ def get_image(school_code, class_name, national_code):
 # Example usage
 if __name__ == "__main__":
     # Input data
-    school_code = "zhn1"
+    school_code = "123"
     class_name = "1052"
     national_code = "09295"
     
