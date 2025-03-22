@@ -168,10 +168,37 @@ class AddFacePage(CTk):
                 
                 except Exception as e:
                     error_queue.put(f"Error: {str(e)}")
-                 
+            
+            def check_results():
+                try:
+                    # checking errors
+                    if not error_queue.empty():
+                        error_msg = error_queue.get()
+                        messagebox.showwarning('Error', error_msg)
+                        self.add_face_button.configure(state='normal', text='Add Face')
+                        return
+                    
+                    # checking results
+                    if not result_queue.empty():
+                        result = result_queue.get()
+                        if result == "success":
+                            try:
+                                self.destroy()
+                            except Exception as e:
+                                print(f'Destroy error: {e}')
+                            main_page_func_student(self.udata)
+                        else:
+                            self.add_face_button.configure(state='normal', text='Add Face')
+                
+                finally:
+                    # enable button at the end 
+                    self.after(100, lambda: self.add_face_button.configure(state='normal', text='Add Face'))
+            
+                self.after(100, check_results)
+        
             processing_thread = threading.Thread(target=download_and_compare)
             processing_thread.start()
-
+            check_results()
 
         # calling function
         add_face()
