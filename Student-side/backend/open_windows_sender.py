@@ -9,7 +9,7 @@ config = configparser.ConfigParser()
 config.read(config_path)
 
 ip_address = config['Server']['IP']
-port = config['Server']['Open_window_sender']
+port = config['Server']['Open_window_port']
 
 EXCLUDED_CLASSES = {
     'CEF-1004', 'Windows.UI.Core.CoreWindow',
