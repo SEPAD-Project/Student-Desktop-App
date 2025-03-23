@@ -1,6 +1,15 @@
 import requests
 import os
 import logging
+import os 
+import configparser
+
+config_path = os.path.join(os.path.dirname(__file__), '../config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+ip_address = config['Server']['IP']
+port = config['Server']['Looking_result_sender_port']
 
 # Configure logging
 logging.basicConfig(
@@ -9,14 +18,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Environment variables for sensitive data
-USERNAME = os.getenv('APP_USERNAME', '09295')
-PASSWORD = os.getenv('APP_PASSWORD', 'stpass')
-SCHOOL_NAME = os.getenv('APP_SCHOOL', 'hn1')
-CLASS_CODE = os.getenv('APP_CLASS', '1052')
-
 # Server configuration
-SERVER_URL = "http://185.4.28.110:5005/upload_text"
+SERVER_URL = f"http://{ip_address}:{port}/upload_text"
 TIMEOUT = 10  # seconds
 MAX_RETRIES = 3
 REQUIRED_HEADER = {'X-Application': 'SchoolApp'}
@@ -105,10 +108,10 @@ def send_data_to_server(
 if __name__ == "__main__":
     text_to_send = "sended txt by user"
     success = send_data_to_server(  text_to_send,
-                                    USERNAME,
-                                    PASSWORD,
-                                    SCHOOL_NAME,
-                                    CLASS_CODE)
+                                    '09295',
+                                    '123',
+                                    '123',
+                                    '1052')
     
     if success:
         print("Status sent successfully")

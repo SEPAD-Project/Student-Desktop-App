@@ -1,8 +1,15 @@
 import win32gui
 import time
-import threading
 import requests
-import sys
+import os 
+import configparser
+
+config_path = os.path.join(os.path.dirname(__file__), '../config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+ip_address = config['Server']['IP']
+port = config['Server']['Open_window_sender']
 
 EXCLUDED_CLASSES = {
     'CEF-1004', 'Windows.UI.Core.CoreWindow',
@@ -32,7 +39,7 @@ def get_user_windows():
         print(f"Failed to get windows: {str(e)}")
         return []
 
-def send_data(server_url, school, class_name, student_id):
+def send_data(school, class_name, student_id):
     """Send window data to server with comprehensive error handling"""
     try:
         # Get active window
@@ -56,7 +63,7 @@ def send_data(server_url, school, class_name, student_id):
 
         # Send request
         response = requests.post(
-            f"{server_url}/save",
+            f"http://{ip_address}:{port}/save",
             json=payload,
             timeout=5
         )
@@ -73,25 +80,24 @@ def send_data(server_url, school, class_name, student_id):
     
     return False
 
-def main_loop(server_url, school, class_name, student_id, interval=5):
+def main_loop(school, class_name, student_id, interval=5):
     """Continuous sending loop with keyboard interrupt handling"""
     try:
-        print(f"Starting monitoring... (Press Ctrl+C to stop)")
+        print(f"Sending result started... (Press Ctrl+C to stop)")
         while True:
-            send_data(server_url, school, class_name, student_id)
+            send_data(school, class_name, student_id)
             time.sleep(interval)
     except KeyboardInterrupt:
-        print("\nMonitoring stopped by user")
+        print("\nSending result stopped by user")
 
 if __name__ == "__main__":
     # Configuration
-    SERVER_URL = "http://185.4.28.110:5002"
     SCHOOL_NAME = "123"
     CLASS_NAME = "1052"
     STUDENT_ID = "09295"
     
     # Run continuous loop
-    # main_loop(SERVER_URL, SCHOOL_NAME, CLASS_NAME, STUDENT_ID)
+    # main_loop(SCHOOL_NAME, CLASS_NAME, STUDENT_ID)
     
     # For single execution (without loop):
-    send_data(SERVER_URL, SCHOOL_NAME, CLASS_NAME, STUDENT_ID)
+    send_data(SCHOOL_NAME, CLASS_NAME, STUDENT_ID)

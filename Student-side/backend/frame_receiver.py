@@ -1,11 +1,20 @@
 import requests
 import cv2
 import numpy as np
+import os 
+import configparser
+
+config_path = os.path.join(os.path.dirname(__file__), '../config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+
+ip_address = config['Server']['IP']
+port = config['Server']['Frame_receiver_port']
 
 # Function to send a request to the API and retrieve the image frames
 def get_frames_from_api(school_code, class_name, national_code):
     # API endpoint
-    url = "http://127.0.0.1:5511/get_student_image"
+    url = f"http://{ip_address}:{port}/get_student_image"
     
     # JSON payload
     payload = {
