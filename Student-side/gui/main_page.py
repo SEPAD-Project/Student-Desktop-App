@@ -24,9 +24,15 @@ class MainPage(CTk):
         cv2.setLogLevel(0)
         reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
 
-        self.udata = udata
+        self.udata = udata #('Abolfazl', 'Rashidian', '123', '7b#52-42-54-4a', '09295', '123')
+        print(self.udata)
+        self.first_name = udata[0]
+        self.family_name = udata[1]
+        self.password = udata[2]
         self.unic_school_code = self.udata[3] # unic_code
-        self.school_name = self.udata[5]
+        self.national_code = self.udata[4]
+        self.school_code = self.udata[5]
+
         self.school_code, self.class_name = reverse_class_code(self.udata[3])
 
 
@@ -56,7 +62,7 @@ class MainPage(CTk):
 
         # adding user data (self.udata) to textbox
         self.user_detail_textbox.delete(1.0, END) # #student_name, student_family, student_password, class_code, school_code, student_national_code
-        self.text = f'Name : {self.udata[0]}\nFamily : {self.udata[1]}\nClass : {self.class_name}\nSchool Name : {self.school_name}\nNational code : {self.udata[4]}'
+        self.text = f'Name : {self.first_name}\nFamily : {self.family_name}\nClass : {self.class_name}\nSchool Code : {self.school_code}\nNational code : {self.national_code}'
         self.user_detail_textbox.insert(1.0, text=self.text) 
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
@@ -72,7 +78,7 @@ class MainPage(CTk):
         
         self.current_connection_status_entry.insert(0, 'OFFLINE')
         self.current_connection_status_entry.configure(state=DISABLED)
-        self.pinging()
+        # self.pinging()
         Thread(target=self.start_video_stream).start()
 
 
@@ -116,16 +122,16 @@ class MainPage(CTk):
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
 
     def generating_result(self):
-        SERVER_URL = "http://185.4.28.110:5002"
-        SCHOOL_NAME = self.school_code
+        SCHOOL_CODE = self.school_code
         CLASS_NAME = self.class_name
         STUDENT_ID = self.udata[4]
         if self.odd_even % 2 == 0:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             reference_image = r"C:\sap-project\registered_image.jpg"
             time.sleep(2)
-            self.txt = f'{looking_result(verifying_image_path=reference_image, frame=frame)}|=|{current_time}'
-            send_data(SERVER_URL, str(SCHOOL_NAME), str(CLASS_NAME), str(STUDENT_ID))
+            self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame)}|=|{current_time}'
+            # sending opens windows to server
+            send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
             print(f'final message : {self.txt}')
 
             self.sender_func(self.txt)
@@ -174,7 +180,7 @@ class MainPage(CTk):
         data = self.udata
         try:
             print(data)
-            print(f'username : {data[4]}\npassword : {data[2]}\nclass_code : {self.class_name}\nschool_name : {self.school_code}\ntext : {txt}')
+            print(f'username : {data[4]}\npassword : {data[2]}\nclass_name : {self.class_name}\nschool_code : {self.school_code}\ntext : {txt}')
             send_data_to_server(username=data[4], password=data[2], 
                                 school_name=self.school_code, class_code=self.class_name, text=txt)
         except Exception as e:
