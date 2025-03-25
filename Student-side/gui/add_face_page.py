@@ -19,7 +19,7 @@ from frame_receiver import get_image
 
 sys.path.append(str
                 (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
-from compare import compare_faces
+from compare import compare
 
 class AddFacePage(CTk):
     def __init__(self, udata):
@@ -158,10 +158,12 @@ class AddFacePage(CTk):
                         return
                     
                     # comparing pictures
-                    compare_result = compare_faces(self.face_frame, self.real_image)
+                    print(type(self.face_frame))
+                    compare_result = compare(ref_image_path=self.real_image,
+                                            new_frame=self.face_frame)
                     result_queue.put(compare_result)
                     
-                    if compare_result[0] and compare_result[1]:
+                    if compare_result:
                         # saving if it was same
                         cv2.imwrite(self.registered_image, self.face_frame)
                         print(f'Image saved as {self.registered_image}')
