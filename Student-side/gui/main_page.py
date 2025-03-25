@@ -78,7 +78,7 @@ class MainPage(CTk):
         
         self.current_connection_status_entry.insert(0, 'OFFLINE')
         self.current_connection_status_entry.configure(state=DISABLED)
-        # self.pinging()
+        self.pinging()
         Thread(target=self.start_video_stream).start()
 
 
