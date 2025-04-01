@@ -1,0 +1,3 @@
+[submodule "Student-side/backend/image_processing"]
+	path = Student-side/backend/image_processing
+	url = https://github.com/SAP-Program/Head-Position-Estimation.git
