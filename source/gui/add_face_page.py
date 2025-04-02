@@ -12,14 +12,10 @@ import sys
 import queue
 from threading import Thread
 
-sys.path.append(str
-                (Path(__file__).resolve().parent.parent / "backend"))
+sys.path.append(str(Path(__file__).resolve().parent))
+from backend.frame_receiver import get_image
+from backend.image_processing.face_recognition.compare import compare
 
-from frame_receiver import get_image
-
-sys.path.append(str
-                (Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/face_recognition"))
-from compare import compare
 
 class AddFacePage(CTk):
     def __init__(self, udata):

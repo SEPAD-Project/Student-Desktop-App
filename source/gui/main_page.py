@@ -1,7 +1,6 @@
 from customtkinter import CTk, CTkTextbox, CTkLabel, CTkButton, CTkFrame, CTkOptionMenu, CTkEntry, END, DISABLED, NORMAL
 import cv2
 from PIL import Image, ImageTk
-import os
 from threading import Thread
 from pathlib import Path
 import sys
@@ -11,12 +10,10 @@ from tkinter import messagebox
 from datetime import datetime
 
 
-sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent / "Head-Position-Estimation/looking_result/"))
-from func_looking_result import looking_result 
-
-sys.path.append(str(Path(__file__).resolve().parent.parent / "backend"))
-from looking_result_sender import send_data_to_server
-from open_windows_sender import send_data
+sys.path.append(str(Path(__file__).resolve().parent))
+from backend.image_processing.looking_result.func_looking_result import looking_result
+from backend.looking_result_sender import send_data_to_server
+from backend.open_windows_sender import send_data
 
 class MainPage(CTk):
     def __init__(self, udata):
