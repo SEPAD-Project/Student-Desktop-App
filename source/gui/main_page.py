@@ -10,7 +10,7 @@ from tkinter import messagebox
 from datetime import datetime
 
 
-sys.path.append(str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from backend.image_processing.looking_result.func_looking_result import looking_result
 from backend.looking_result_sender import send_data_to_server
 from backend.open_windows_sender import send_data
