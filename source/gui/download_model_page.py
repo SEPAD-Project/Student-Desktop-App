@@ -1,6 +1,13 @@
 from customtkinter import CTk, CTkFrame, CTkLabel, CTkEntry, CTkButton, CTkCheckBox
 from threading import Thread
+from tkinter import messagebox
+import sys
+from requests import get, exceptions
+from pathlib import Path
 
+# System paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR / "backend"))
 
 
 class DownloadModelPage(CTk):
@@ -21,7 +28,7 @@ class DownloadModelPage(CTk):
         """Configure main window settings"""
         self.geometry('600x450')
         self.minsize(600, 450)
-        self.title('Student Side Login Page')
+        self.title('Model Download Page')
 
     def create_widgets(self):
         """Create and arrange GUI elements"""
@@ -46,10 +53,27 @@ class DownloadModelPage(CTk):
             element.grid(row=row, column=col, **kwargs)
 
         # Assignment to class variables
-        (self.login_text, self.username_lbl, self.password_lbl, 
-         self.username_entry, self.password_entry, self.checkbox, 
-         self.login_btn) = elements
+        (self.download_text,
+         self.download_btn) = elements
 
+
+    def check_internet(self):
+        """Check internet connection"""
+        try:
+            get('https://google.com', timeout=5)
+            return True
+        except exceptions.ConnectionError:
+            self.show_error("Connection Error", "No internet connection!")
+            self.toggle_button()
+            return False
+
+    def toggle__button(self, state='normal'):
+        """Toggle button state"""
+        self.download_btn.configure(state=state, text="Download" if state == 'normal' else "Downloading ...")
+
+    def show_error(self, title, message):
+        """Show error message dialog"""
+        self.after(0, lambda: messagebox.showerror(title, message))
 
     def run(self):
         self.mainloop()
