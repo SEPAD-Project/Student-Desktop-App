@@ -91,6 +91,28 @@ class DownloadModelPage(CTk):
         self.minsize(600, 450)
         self.title('Model Download Page')
 
+    def check_existing_files(self):
+        """Check which files need to be downloaded"""
+        self.download_queue = []
+        for model in MODELS:
+            if not Path(model['path']).exists():
+                self.download_queue.append(model)
+        
+        if self.download_queue:
+            self.download_btn.configure(state="normal")
+            self.update_status(f"{len(self.download_queue)} files need download")
+        else:
+            self.update_status("All files are already downloaded", "green")
+
+    def start_download_thread(self):
+        """Start download process in a thread"""
+        if not self.check_internet():
+            return
+            
+        self.download_btn.configure(state="disabled")
+        self.running = True
+        Thread(target=self.download_process, daemon=True).start()
+
 
     def update_status(self, text, color="gray70"):
         self.status_label.configure(text=text, text_color=color)
