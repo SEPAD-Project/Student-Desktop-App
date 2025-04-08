@@ -92,6 +92,18 @@ class DownloadModelPage(CTk):
         self.title('Model Download Page')
 
 
+    def update_status(self, text, color="gray70"):
+        self.status_label.configure(text=text, text_color=color)
+
+    def check_internet(self):
+        """Check internet connection"""
+        try:
+            requests.get('https://google.com', timeout=5)
+            return True
+        except requests.ConnectionError:
+            self.show_error("Connection Error", "No internet connection!")
+            return False
+
     def show_error(self, title, message):
         """Show error message dialog"""
         messagebox.showerror(title, message)
