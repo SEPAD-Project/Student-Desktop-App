@@ -113,6 +113,68 @@ class DownloadModelPage(CTk):
         self.running = True
         Thread(target=self.download_process, daemon=True).start()
 
+    def download_process(self):
+        """Main download process"""
+        try:
+            for model in self.download_queue:
+                if not self.running:
+                    break
+                
+                self.current_download = model
+                self.update_status(f"Downloading {model['name']}...")
+                
+                # Create directory if not exists
+                os.makedirs(os.path.dirname(model['path']), exist_ok=True)
+                
+                # Start download
+                response = requests.get(model['url'], stream=True)
+                response.raise_for_status()
+                
+                total_size = int(response.headers.get('content-length', 0))
+                downloaded = 0
+                start_time = time.time()
+                
+                with open(model['path'], 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if not self.running:
+                            break
+                            
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            self.update_progress(downloaded, total_size, start_time)
+                
+                # if self.running and downloaded != total_size:
+                    raise Exception("Download incomplete")
+
+            if self.running:
+                self.after(0, self.show_success)
+        except Exception as e: 
+            self.after(0, lambda e=e: self.show_error("Download Error", str(e))) 
+        finally:
+            self.running = False
+            self.after(0, self.check_existing_files)
+
+    def update_progress(self, downloaded, total, start_time):
+        """Update progress bar and details"""
+        progress = downloaded / total if total > 0 else 0
+        mb_downloaded = downloaded / (1024 * 1024)
+        mb_total = total / (1024 * 1024) if total > 0 else 0
+        
+        # Calculate speed
+        elapsed = time.time() - start_time
+        speed = (downloaded / 1024) / elapsed if elapsed > 0 else 0
+        
+        details = (
+            f"{mb_downloaded:.1f}MB of {mb_total:.1f}MB | "
+            f"{speed:.1f} KB/s | "
+            f"{progress:.1%}"
+        )
+        
+        self.after(0, lambda: [
+            self.progress_bar.set(progress),
+            self.details_label.configure(text=details)
+        ])
 
     def update_status(self, text, color="gray70"):
         self.status_label.configure(text=text, text_color=color)
