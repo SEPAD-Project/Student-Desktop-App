@@ -6,6 +6,7 @@ from pathlib import Path
 import requests
 import time
 import os
+from add_face_page import add_face_page_func
 
 # System paths
 OPENCV_FACE_DETECTOR_PATH = r"c:\sap-project\opencv\haarcascade_frontalface_default.xml"
@@ -28,8 +29,9 @@ MODELS = [
 ]
 
 class DownloadModelPage(CTk):
-    def __init__(self):
+    def __init__(self, udata):
         super().__init__()
+        self.udata = udata
         self.download_queue = []
         self.current_download = None
         self.running = False
@@ -41,23 +43,17 @@ class DownloadModelPage(CTk):
         """Initialize all UI components"""
         # Main frame with red border
         self.main_frame = CTkFrame(master=self, border_color='red', border_width=2)
-        self.main_frame.pack(padx=20, pady=20, expand=True, fill='both')
 
         # Title
         self.title_label = CTkLabel(
             master=self.main_frame, 
             text="Model Download Page", 
-            font=('montserrat', 26, 'bold')
-        )
-        self.title_label.pack(pady=(30, 20))
+            font=('montserrat', 26, 'bold'))
 
         # Progress bar section
         self.progress_frame = CTkFrame(self.main_frame, fg_color='transparent')
-        self.progress_frame.pack(fill='x', padx=20, pady=10)
-        
-        self.progress_bar = CTkProgressBar(self.progress_frame, height=15)
+        self.progress_bar = CTkProgressBar(self.progress_frame, height=15, width=300)
         self.progress_bar.set(0)
-        self.progress_bar.pack(fill='x', expand=True)
 
         # Status labels
         self.status_label = CTkLabel(
@@ -65,18 +61,15 @@ class DownloadModelPage(CTk):
             text="Ready to download", 
             text_color="gray70"
         )
-        self.status_label.pack(pady=(5, 0))
 
         self.details_label = CTkLabel(
             self.progress_frame, 
             text="", 
             text_color="gray70"
         )
-        self.details_label.pack(pady=(2, 10))
 
         # Buttons frame
         self.button_frame = CTkFrame(self.main_frame, fg_color='transparent')
-        self.button_frame.pack(pady=(0, 30))
 
         # Download button
         self.download_btn = CTkButton(
@@ -88,7 +81,6 @@ class DownloadModelPage(CTk):
             corner_radius=10,
             command=self.start_download_thread
         )
-        self.download_btn.pack(pady=5)
 
         # Next page button
         self.next_btn = CTkButton(
@@ -101,12 +93,22 @@ class DownloadModelPage(CTk):
             state="disabled",
             command=self.go_to_next_page
         )
-        self.next_btn.pack(pady=5)
 
+        # Placing elements
+        self.title_label.pack(pady=(50, 30))
+        self.main_frame.pack(padx=20, pady=20, expand=True, fill='both')
+        self.progress_frame.pack(fill='x', padx=20, pady=10)
+        self.progress_bar.pack()  
+        self.status_label.pack(pady=(5, 0))
+        self.details_label.pack(pady=(2, 0))
+        self.button_frame.pack(pady=(0, 30))
+        self.download_btn.pack(pady=5)
+        self.next_btn.pack(pady=5)
+    
     def setup_window(self):
         """Configure main window settings"""
-        self.geometry('600x500')
-        self.minsize(600, 500)
+        self.geometry('600x400')
+        self.minsize(600, 400)
         self.title('Model Download Page')
 
     def check_existing_files(self):
@@ -228,12 +230,15 @@ class DownloadModelPage(CTk):
 
     def go_to_next_page(self):
         """Callback for next page button"""
-        messagebox.showinfo("Info", "Proceeding to next page...")
-        # Add your next page logic here
+        self.destroy()
+        add_face_page_func(udata=self.udata)
 
     def run(self):
         self.mainloop()
 
+def start():
+    app = DownloadModelPage('x')
+    app.run()   
+
 if __name__ == '__main__':
-    app = DownloadModelPage()
-    app.run()
+    start()

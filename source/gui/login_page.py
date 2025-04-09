@@ -4,6 +4,7 @@ from tkinter import messagebox
 import sys
 from requests import get, exceptions
 from pathlib import Path
+from download_model_page import start
 
 # System paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -173,7 +174,7 @@ class StudentSideAppLoginPage(CTk):
                 else:
                     # user doesnt have face recognizer or face detector model
                     # go to download page
-                    pass
+                    start()
 
         except (PermissionError, OSError) as e:
             self.show_error("File Error", f"File operation failed: {str(e)}")
