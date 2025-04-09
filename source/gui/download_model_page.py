@@ -39,11 +39,11 @@ class DownloadModelPage(CTk):
 
     def init_ui(self):
         """Initialize all UI components"""
-        # Main frame with red border (from original code)
+        # Main frame with red border
         self.main_frame = CTkFrame(master=self, border_color='red', border_width=2)
         self.main_frame.pack(padx=20, pady=20, expand=True, fill='both')
 
-        # Title moved higher (pady reduced)
+        # Title
         self.title_label = CTkLabel(
             master=self.main_frame, 
             text="Model Download Page", 
@@ -59,7 +59,7 @@ class DownloadModelPage(CTk):
         self.progress_bar.set(0)
         self.progress_bar.pack(fill='x', expand=True)
 
-        # Download details
+        # Status labels
         self.status_label = CTkLabel(
             self.progress_frame, 
             text="Ready to download", 
@@ -74,21 +74,39 @@ class DownloadModelPage(CTk):
         )
         self.details_label.pack(pady=(2, 10))
 
-        # Download button moved lower (pady increased)
+        # Buttons frame
+        self.button_frame = CTkFrame(self.main_frame, fg_color='transparent')
+        self.button_frame.pack(pady=(0, 30))
+
+        # Download button
         self.download_btn = CTkButton(
-            self.main_frame,
+            self.button_frame,
             text="Download Missing Files",
             font=('montserrat', 20, 'bold'),
+            width=300,
+            height=40,
             corner_radius=10,
-            command=self.start_download_thread,
-            state="disabled"
+            command=self.start_download_thread
         )
-        self.download_btn.pack(pady=(0, 30))
+        self.download_btn.pack(pady=5)
+
+        # Next page button
+        self.next_btn = CTkButton(
+            self.button_frame,
+            text="Continue to Next Page",
+            font=('montserrat', 20, 'bold'),
+            width=300,
+            height=40,
+            corner_radius=10,
+            state="disabled",
+            command=self.go_to_next_page
+        )
+        self.next_btn.pack(pady=5)
 
     def setup_window(self):
         """Configure main window settings"""
-        self.geometry('600x450')
-        self.minsize(600, 450)
+        self.geometry('600x500')
+        self.minsize(600, 500)
         self.title('Model Download Page')
 
     def check_existing_files(self):
@@ -98,11 +116,21 @@ class DownloadModelPage(CTk):
             if not Path(model['path']).exists():
                 self.download_queue.append(model)
         
+        self.update_ui_state()
+
+    def update_ui_state(self):
+        """Update UI elements state"""
         if self.download_queue:
-            self.download_btn.configure(state="normal")
+            self.download_btn.configure(state="normal", text="Download Missing Files")
             self.update_status(f"{len(self.download_queue)} files need download")
         else:
+            self.download_btn.configure(state="disabled", text="All files downloaded")
             self.update_status("All files are already downloaded", "green")
+            self.next_btn.configure(state="normal")
+
+    def all_files_downloaded(self):
+        """Check if all files are downloaded"""
+        return all(Path(model['path']).exists() for model in MODELS)
 
     def start_download_thread(self):
         """Start download process in a thread"""
@@ -143,9 +171,6 @@ class DownloadModelPage(CTk):
                             f.write(chunk)
                             downloaded += len(chunk)
                             self.update_progress(downloaded, total_size, start_time)
-                
-                # if self.running and downloaded != total_size:
-                    raise Exception("Download incomplete")
 
             if self.running:
                 self.after(0, self.show_success)
@@ -159,9 +184,8 @@ class DownloadModelPage(CTk):
         """Update progress bar and details"""
         progress = downloaded / total if total > 0 else 0
         mb_downloaded = downloaded / (1024 * 1024)
-        mb_total = total / (1024 * 1024) if total > 0 else 0
+        mb_total = total / (1024 * 1024)
         
-        # Calculate speed
         elapsed = time.time() - start_time
         speed = (downloaded / 1024) / elapsed if elapsed > 0 else 0
         
@@ -200,7 +224,12 @@ class DownloadModelPage(CTk):
     def reset_ui(self):
         self.progress_bar.set(0)
         self.details_label.configure(text="")
-        self.download_btn.configure(state="normal")
+        self.check_existing_files()
+
+    def go_to_next_page(self):
+        """Callback for next page button"""
+        messagebox.showinfo("Info", "Proceeding to next page...")
+        # Add your next page logic here
 
     def run(self):
         self.mainloop()
