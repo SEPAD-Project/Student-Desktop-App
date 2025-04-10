@@ -75,7 +75,7 @@ class MainPage(CTk):
         
         self.current_connection_status_entry.insert(0, 'OFFLINE')
         self.current_connection_status_entry.configure(state=DISABLED)
-        self.pinging()
+        Thread(target=self.ping_handler).start()
         Thread(target=self.start_video_stream).start()
         
 
@@ -158,10 +158,11 @@ class MainPage(CTk):
             self.current_ping_status_entry.insert(END, response_time)
         self.current_ping_status_entry.configure(state=DISABLED)
 
-        self.after(1000, self.pinging)
-
-     
-
+    def ping_handler(self):
+        while True:
+            self.pinging()
+            time.sleep(1)
+    
     def start_btn_func(self): #student_name, student_family, student_password, class_code, school_code, student_national_code, class_name
         self.odd_even+=1
         if self.odd_even % 2 == 0:
