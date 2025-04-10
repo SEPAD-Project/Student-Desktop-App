@@ -77,13 +77,14 @@ class MainPage(CTk):
         self.current_connection_status_entry.configure(state=DISABLED)
         self.pinging()
         Thread(target=self.start_video_stream).start()
+        
 
 
     # starting camera with default camera index 
     def start_video_stream(self):
         self.cap = cv2.VideoCapture(0)
         Thread(target=self.update_video).start()
-        Thread(target=self.generating_result).start()
+        Thread(target=self.start_handler).start()
     # getting connected camera to system by testing their index in VideoCapture
     def get_available_cameras(self):
         cameras = {}
@@ -119,21 +120,26 @@ class MainPage(CTk):
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
 
     def generating_result(self):
+        print('x')
         SCHOOL_CODE = self.school_code
         CLASS_NAME = self.class_name
         STUDENT_ID = self.udata[4]
-        if self.odd_even % 2 == 0:
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            reference_image = r"C:\sap-project\registered_image.jpg"
-            time.sleep(2)
-            self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame)}|=|{current_time}'
-            # sending opens windows to server
-            send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
-            print(f'final message : {self.txt}')
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        reference_image = r"C:\sap-project\registered_image.jpg"
+        time.sleep(2)
+        self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame)}|=|{current_time}'
+        # sending opens windows to server
+        send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
+        print(f'final message : {self.txt}')
 
-            self.sender_func(self.txt)
-        self.after(10000, self.generating_result)
+        self.sender_func(self.txt)
     
+    def start_handler(self):
+        while True:
+            if self.odd_even % 2 == 0:
+                Thread(target=self.generating_result).start()
+            time.sleep(10)
+
     def pinging(self):
         response_time = ping('google.com', unit='ms')
         if response_time is not None:
