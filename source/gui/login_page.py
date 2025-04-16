@@ -7,11 +7,9 @@ from pathlib import Path
 from download_model_page import start
 
 # System paths
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR / "backend"))
-print(BASE_DIR)
+sys.path.append(str(Path(__file__).resolve().parent))
 # imports after path configuration
-from login_page_db import check_auth
+from backend.login_page_db import check_auth
 from main_page import main_page_func_student
 from add_face_page import add_face_page_func
 

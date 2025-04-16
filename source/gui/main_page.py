@@ -26,9 +26,9 @@ class MainPage(CTk):
         self.first_name = udata[0]
         self.family_name = udata[1]
         self.password = udata[2]
-        self.unic_school_code = self.udata[3] # unic_code
-        self.national_code = self.udata[4]
-        self.school_code = self.udata[5]
+        self.unic_school_code = udata[3] # unic_code
+        self.national_code = udata[4]
+        self.school_code = udata[5]
 
         self.school_code, self.class_name = reverse_class_code(self.udata[3])
 
