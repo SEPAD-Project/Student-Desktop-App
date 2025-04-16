@@ -159,10 +159,10 @@ class StudentSideAppLoginPage(CTk):
     def handle_post_login(self, user_data):
         """Handle post-login operations"""
         try:
-            data_path = Path(r"C:\\sap-project")
+            data_path = Path(r"C:\sap-project")
             registered_image = data_path / "registered_image.jpg"
-            OPENCV_FACE_DETECTOR_PATH = Path(r"c:\\sap-project\\opencv\\haarcascade_frontalface_default.xml")
-            OPENCV_FACE_RECOGNIZER_PATH = Path(r"c:\\sap-project\\opencv\\face_recognition_sface_2021dec.onnx")
+            OPENCV_FACE_DETECTOR_PATH = Path(r"C:\sap-project\opencv\haarcascade_frontalface_default.xml")
+            OPENCV_FACE_RECOGNIZER_PATH = Path(r"C:\sap-project\opencv\face_recognition_sface_2021dec.onnx")
             
             if not data_path.exists():
                 data_path.mkdir(parents=True, exist_ok=True)
