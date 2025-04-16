@@ -161,17 +161,18 @@ class StudentSideAppLoginPage(CTk):
         try:
             data_path = Path(r"C:\\sap-project")
             registered_image = data_path / "registered_image.jpg"
-
+            OPENCV_FACE_DETECTOR_PATH = Path(r"c:\\sap-project\\opencv\\haarcascade_frontalface_default.xml")
+            OPENCV_FACE_RECOGNIZER_PATH = Path(r"c:\\sap-project\\opencv\\face_recognition_sface_2021dec.onnx")
+            
             if not data_path.exists():
                 data_path.mkdir(parents=True, exist_ok=True)
-            if registered_image.exists():
-                main_page_func_student(user_data)
-            else:
-                OPENCV_FACE_DETECTOR_PATH = Path(r"c:\\sap-project\\opencv\\haarcascade_frontalface_default.xml")
-                OPENCV_FACE_RECOGNIZER_PATH = Path(r"c:\\sap-project\\opencv\\face_recognition_sface_2021dec.onnx")
-                if OPENCV_FACE_DETECTOR_PATH.exists() and OPENCV_FACE_RECOGNIZER_PATH.exists():
-                    add_face_page_func(user_data)
+
+            if OPENCV_FACE_DETECTOR_PATH.exists() and OPENCV_FACE_RECOGNIZER_PATH.exists():
+                if registered_image.exists():
+                    main_page_func_student(user_data)
                 else:
+                    add_face_page_func(user_data)
+            else:
                     # user doesnt have face recognizer or face detector model
                     # go to download page
                     start()
