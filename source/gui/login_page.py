@@ -160,11 +160,11 @@ class StudentSideAppLoginPage(CTk):
         try:
             data_path = Path(r"C:\sap-project")
             registered_image = data_path / "registered_image.jpg"
-            OPENCV_FACE_DETECTOR_PATH = Path(rf"C:\Users\{username}\.insightface\models\x.py")            
+            BUFFALO_MODEL_PATH = Path(r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip")            
             if not data_path.exists():
                 data_path.mkdir(parents=True, exist_ok=True)
 
-            if OPENCV_FACE_DETECTOR_PATH.exists() :
+            if BUFFALO_MODEL_PATH.exists() :
                 if registered_image.exists():
                     main_page_func_student(user_data)
                 else:

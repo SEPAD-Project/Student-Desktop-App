@@ -13,7 +13,7 @@ username = getpass.getuser()
 print("Username (getpass):", username)
 
 # System paths
-OPENCV_FACE_RECOGNIZER_PATH = rf"C:\Users\{username}\.insightface\models"
+BUFFALO_MODEL_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / "backend"))
@@ -21,8 +21,8 @@ sys.path.append(str(BASE_DIR / "backend"))
 MODELS = [
     {
         "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
-        "path": OPENCV_FACE_RECOGNIZER_PATH,
-        "name": "Face Recognition Model"
+        "path": BUFFALO_MODEL_PATH,
+        "name": "BUFFALO MODE PATH"
     }
 ]
 
