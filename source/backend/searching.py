@@ -20,7 +20,7 @@ def get_values_by_username(value, person, host='localhost', user='root', passwor
         result = cursor.fetchone()
         print(result)
         if result[0] > 0:
-            cursor.execute('SELECT student_name, student_family, student_password, class_code, student_national_code, school_code class FROM students WHERE student_national_code = %s', (value,))
+            cursor.execute('SELECT student_name, student_family, student_password, class_id, student_national_code, school_id class FROM students WHERE student_national_code = %s', (value,))
 
             udata = cursor.fetchone()
             cursor.close()

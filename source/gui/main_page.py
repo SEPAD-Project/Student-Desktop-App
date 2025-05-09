@@ -19,18 +19,15 @@ class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
         cv2.setLogLevel(0)
-        reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
 
-        self.udata = udata #('Abolfazl', 'Rashidian', '123', '7b#52-42-54-4a', '09295', '123')
+        self.udata = udata # ('Abolfazl', 'Rashidian', '123', 2, '0925', 1)
         print(self.udata)
         self.first_name = udata[0]
         self.family_name = udata[1]
         self.password = udata[2]
-        self.unic_school_code = udata[3] # unic_code
         self.national_code = udata[4]
-        self.school_code = udata[5]
-
-        self.school_code, self.class_name = reverse_class_code(self.udata[3])
+        self.class_id = udata[3]
+        self.school_id = udata[5]
 
 
         self.odd_even = 1
@@ -59,7 +56,7 @@ class MainPage(CTk):
 
         # adding user data (self.udata) to textbox
         self.user_detail_textbox.delete(1.0, END) # #student_name, student_family, student_password, class_code, school_code, student_national_code
-        self.text = f'Name : {self.first_name}\nFamily : {self.family_name}\nClass : {self.class_name}\nSchool Code : {self.school_code}\nNational code : {self.national_code}'
+        self.text = f'Name : {self.first_name}\nFamily : {self.family_name}\nSCHOOL : {self.school_id}\nCLASS : {self.class_id}'
         self.user_detail_textbox.insert(1.0, text=self.text) 
         self.user_detail_textbox.configure(state=DISABLED)
         # placing elements
@@ -120,9 +117,8 @@ class MainPage(CTk):
         self.camera_selectbox.configure(values=list(self.available_camera.keys()))
 
     def generating_result(self):
-        print('x')
-        SCHOOL_CODE = self.school_code
-        CLASS_NAME = self.class_name
+        SCHOOL_CODE = self.school_id
+        CLASS_NAME = self.class_id
         STUDENT_ID = self.udata[4]
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         reference_image = r"C:\sap-project\registered_image.jpg"
@@ -184,9 +180,9 @@ class MainPage(CTk):
         data = self.udata
         try:
             print(data)
-            print(f'username : {data[4]}\npassword : {data[2]}\nclass_name : {self.class_name}\nschool_code : {self.school_code}\ntext : {txt}')
+            print(f'username : {data[4]}\npassword : {data[2]}\nclass_name : {self.class_id}\nschool_code : {self.school_id}\ntext : {txt}')
             send_data_to_server(username=data[4], password=data[2], 
-                                school_name=self.school_code, class_code=self.class_name, text=txt)
+                                school_name=self.school_id, class_code=self.class_id, text=txt)
         except Exception as e:
             self.odd_even+=1
             messagebox.showwarning('Connection Error', 'Can not join to class at this time!\nTry again later.')
