@@ -7,24 +7,22 @@ import requests
 import time
 import os
 from add_face_page import add_face_page_func
+import getpass
+
+username = getpass.getuser()
+print("Username (getpass):", username)
 
 # System paths
-OPENCV_FACE_DETECTOR_PATH = r"c:\sap-project\opencv\haarcascade_frontalface_default.xml"
-OPENCV_FACE_RECOGNIZER_PATH = r"c:\sap-project\opencv\face_recognition_sface_2021dec.onnx"
+OPENCV_FACE_RECOGNIZER_PATH = rf"C:\Users\{username}\.insightface\models"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / "backend"))
 
 MODELS = [
     {
-        "url": "https://github.com/SAP-Program/Head-Position-Estimation/raw/main/models/face_recognition_sface_2021dec.onnx",
+        "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
         "path": OPENCV_FACE_RECOGNIZER_PATH,
         "name": "Face Recognition Model"
-    },
-    {
-        "url": "https://github.com/SAP-Program/Head-Position-Estimation/raw/main/models/haarcascade_frontalface_default.xml",
-        "path": OPENCV_FACE_DETECTOR_PATH,
-        "name": "Face Detector Model"
     }
 ]
 
