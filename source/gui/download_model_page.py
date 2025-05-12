@@ -8,12 +8,15 @@ import time
 import os
 from add_face_page import add_face_page_func
 import getpass
+import zipfile
+
 
 username = getpass.getuser()
 print("Username (getpass):", username)
 
 # System paths
 BUFFALO_MODEL_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip"
+EXTRACT_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / "backend"))
@@ -22,7 +25,8 @@ MODELS = [
     {
         "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
         "path": BUFFALO_MODEL_PATH,
-        "name": "BUFFALO MODE PATH"
+        "extract_path": EXTRACT_PATH,
+        "name": "BUFFALO MODEL"
     }
 ]
 
@@ -110,10 +114,11 @@ class DownloadModelPage(CTk):
         self.title('Model Download Page')
 
     def check_existing_files(self):
-        """Check which files need to be downloaded"""
+        """Check which files need to be downloaded and extracted"""
         self.download_queue = []
         for model in MODELS:
-            if not Path(model['path']).exists():
+            # Check if either zip file doesn't exist or extraction folder doesn't exist
+            if not Path(model['path']).exists() or not Path(model['extract_path']).exists():
                 self.download_queue.append(model)
         
         self.update_ui_state()
@@ -124,13 +129,13 @@ class DownloadModelPage(CTk):
             self.download_btn.configure(state="normal", text="Download Missing Files")
             self.update_status(f"{len(self.download_queue)} files need download")
         else:
-            self.download_btn.configure(state="disabled", text="All files downloaded")
-            self.update_status("All files are already downloaded", "green")
+            self.download_btn.configure(state="disabled", text="All files downloaded and extracted")
+            self.update_status("All files are already downloaded and extracted", "green")
             self.next_btn.configure(state="normal")
 
-    def all_files_downloaded(self):
-        """Check if all files are downloaded"""
-        return all(Path(model['path']).exists() for model in MODELS)
+    def all_files_downloaded_and_extracted(self):
+        """Check if all files are downloaded and extracted"""
+        return all(Path(model['path']).exists() and Path(model['extract_path']).exists() for model in MODELS)
 
     def start_download_thread(self):
         """Start download process in a thread"""
@@ -139,61 +144,89 @@ class DownloadModelPage(CTk):
             
         self.download_btn.configure(state="disabled")
         self.running = True
-        Thread(target=self.download_process, daemon=True).start()
+        Thread(target=self.download_and_extract_process, daemon=True).start()
 
-    def download_process(self):
-        """Main download process"""
+    def download_and_extract_process(self):
+        """Main download and extract process"""
         try:
             for model in self.download_queue:
                 if not self.running:
                     break
                 
                 self.current_download = model
-                self.update_status(f"Downloading {model['name']}...")
                 
-                # Create directory if not exists
-                os.makedirs(os.path.dirname(model['path']), exist_ok=True)
-                
-                # Start download
-                response = requests.get(model['url'], stream=True)
-                response.raise_for_status()
-                
-                total_size = int(response.headers.get('content-length', 0))
-                downloaded = 0
-                start_time = time.time()
-                
-                with open(model['path'], 'wb') as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        if not self.running:
-                            break
-                            
-                        if chunk:
-                            f.write(chunk)
-                            downloaded += len(chunk)
-                            self.update_progress(downloaded, total_size, start_time)
+                # Download phase
+                if not Path(model['path']).exists():
+                    self.update_status(f"Downloading {model['name']}...")
+                    
+                    # Create directory if not exists
+                    os.makedirs(os.path.dirname(model['path']), exist_ok=True)
+                    
+                    # Start download
+                    response = requests.get(model['url'], stream=True)
+                    response.raise_for_status()
+                    
+                    total_size = int(response.headers.get('content-length', 0))
+                    downloaded = 0
+                    start_time = time.time()
+                    
+                    with open(model['path'], 'wb') as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            if not self.running:
+                                break
+                                
+                            if chunk:
+                                f.write(chunk)
+                                downloaded += len(chunk)
+                                self.update_progress(downloaded, total_size, start_time, "Downloading")
+
+                # Extract phase
+                if not Path(model['extract_path']).exists():
+                    self.update_status(f"Extracting {model['name']}...")
+                    os.makedirs(model['extract_path'], exist_ok=True)
+                    
+                    # Get total size for extraction progress
+                    with zipfile.ZipFile(model['path'], 'r') as zip_ref:
+                        total_files = len(zip_ref.infolist())
+                        extracted = 0
+                        start_time = time.time()
+                        
+                        for file in zip_ref.infolist():
+                            if not self.running:
+                                break
+                                
+                            zip_ref.extract(file, model['extract_path'])
+                            extracted += 1
+                            self.update_progress(extracted, total_files, start_time, "Extracting")
 
             if self.running:
                 self.after(0, self.show_success)
         except Exception as e: 
-            self.after(0, lambda e=e: self.show_error("Download Error", str(e))) 
+            self.after(0, lambda e=e: self.show_error("Error", str(e))) 
         finally:
             self.running = False
             self.after(0, self.check_existing_files)
 
-    def update_progress(self, downloaded, total, start_time):
+    def update_progress(self, current, total, start_time, phase):
         """Update progress bar and details"""
-        progress = downloaded / total if total > 0 else 0
-        mb_downloaded = downloaded / (1024 * 1024)
-        mb_total = total / (1024 * 1024)
+        progress = current / total if total > 0 else 0
         
-        elapsed = time.time() - start_time
-        speed = (downloaded / 1024) / elapsed if elapsed > 0 else 0
-        
-        details = (
-            f"{mb_downloaded:.1f}MB of {mb_total:.1f}MB | "
-            f"{speed:.1f} KB/s | "
-            f"{progress:.1%}"
-        )
+        if phase == "Downloading":
+            mb_current = current / (1024 * 1024)
+            mb_total = total / (1024 * 1024)
+            elapsed = time.time() - start_time
+            speed = (current / 1024) / elapsed if elapsed > 0 else 0
+            
+            details = (
+                f"{phase}: {mb_current:.1f}MB of {mb_total:.1f}MB | "
+                f"{speed:.1f} KB/s | "
+                f"{progress:.1%}"
+            )
+        else:  # Extracting
+            details = (
+                f"{phase}: {current} of {total} files | "
+                f"{progress:.1%}"
+            )
         
         self.after(0, lambda: [
             self.progress_bar.set(progress),
@@ -218,7 +251,7 @@ class DownloadModelPage(CTk):
         self.reset_ui()
 
     def show_success(self):
-        messagebox.showinfo("Success", "All files downloaded successfully!")
+        messagebox.showinfo("Success", "All files downloaded and extracted successfully!")
         self.reset_ui()
 
     def reset_ui(self):
