@@ -21,6 +21,7 @@ class AddFacePage(CTk):
     def __init__(self, udata):
         super().__init__()
         self.udata = udata
+        print(udata)
         cv2.setLogLevel(0)
         self.title('Add Face-Page')
         self.geometry('750x580')
@@ -124,9 +125,6 @@ class AddFacePage(CTk):
             self.taken_image = Image.fromarray(self.face_frame)
     # adding face after comparing two frames 
     def adding_face_func(self):
-        unic_class_code = self.udata[3]
-        reverse_class_code = lambda code, key="crax6ix": (str(int(code.split('#')[0], 16)), ''.join(chr(int(h, 16) ^ ord(key[i % len(key)])) for i, h in enumerate(code.split('#')[1].split('-'))))
-        original_school_code, original_class_name = reverse_class_code(unic_class_code)
         self.real_image = "C:\\sap-project\\real_image.jpg"
         self.registered_image = "C:\\sap-project\\registered_image.jpg"
         
@@ -143,9 +141,10 @@ class AddFacePage(CTk):
                     if self.face_frame is None:
                         error_queue.put("No image taken!")
                         return
-                    
+                    class_id = str(self.udata[3])
+                    school_id = str(self.udata[5])
                     # getting image from server in other thread
-                    download_thread = threading.Thread(target=get_image, args=(original_school_code, original_class_name, self.udata[4]))
+                    download_thread = threading.Thread(target=get_image, args=(school_id, class_id, self.udata[4]))
                     download_thread.start()
                     download_thread.join()  # waiting for download complete
                     
