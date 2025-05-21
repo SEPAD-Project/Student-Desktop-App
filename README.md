@@ -34,7 +34,7 @@ git submodule update
 
 ## Running the Application
 ```bash
-python source/gui/login_page.py
+python run.py
 ```
 
 ## Directory Structure
@@ -45,6 +45,7 @@ student-app/
 ├──── gui/                 # GUI components
 │     └── login_page.py    # Main application entry point
 ├──── backend/             # Attention analysis models
+├── RUN.py                 # Run login page
 ├── requirements.txt       # Python dependencies
 ├── README.md              # Documentation
 ├── .gitignore             # Git ignore file
