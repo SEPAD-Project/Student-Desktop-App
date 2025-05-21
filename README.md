@@ -1,7 +1,7 @@
-# Student Attention Platform (SAP) - Student App
+# SEPAD (The Persian acronym for Student Online Monitoring System) - Student App
 
 ## Overview
-The Student App is a core component of the Student Attention Platform (SAP), designed to monitor and report student engagement during online classes. The application uses webcam feeds to analyze student attention levels and provides real-time feedback to educators.
+The Student App is a core component of SEPAD, designed to monitor and report student engagement during online classes. The application uses webcam feeds to analyze student attention levels and provides real-time feedback to educators.
 
 ## Requirements
 Before installation, ensure you meet these requirements:
@@ -16,7 +16,7 @@ Before installation, ensure you meet these requirements:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/SAP-Program/Student-App.git
+git clone https://github.com/SEPAD-Project/Student-App.git
 ```
 2. Navigate to the student-app directory:
 ```bash
@@ -59,14 +59,14 @@ student-app/
 5. Open a Pull Request  
 
 # 📬 Contact  
-**Email**: sapOrganizations@gmail.com  
-**Issues**: [GitHub Issues](https://github.com/SAP-Program/Student-App/issues)  
+**Email**: SepadOrganizations@gmail.com  
+**Issues**: [GitHub Issues](https://github.com/SEPAD-Project/Student-App/issues)  
 
 # 📜 License (MIT)  
 ```text
 MIT License
 
-Copyright (c) 2023 SAP Team
+Copyright (c) 2023 SEPAD Project
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
