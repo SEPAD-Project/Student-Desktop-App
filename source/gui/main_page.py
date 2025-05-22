@@ -164,15 +164,19 @@ class MainPage(CTk):
 
     def generating_result(self):
         """Generate and send attendance results"""
-        if not self.attendance_confirmed:
-            return
-            
+        
         SCHOOL_CODE = self.school_id
         CLASS_NAME = self.class_id
         STUDENT_ID = self.udata[4]
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         reference_image = r"C:\sap-project\registered_image.jpg"
-        time.sleep(2)
+
+        if not self.attendance_confirmed:
+            send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
+            self.sender_func(f'absent|=|{current_time}')
+            return 
+    
+        time.sleep(1)
         self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame)}|=|{current_time}'
         
         # Send data to server
@@ -198,7 +202,7 @@ class MainPage(CTk):
         
         try:
             # Wait random time between 1-10 minutes
-            wait_time = random.randint(1, 10) * 60
+            wait_time = 60 #random.randint(1, 2) * 60
             print(f"Next attendance check in {wait_time//60} minutes")
             time.sleep(wait_time)
             
@@ -277,7 +281,6 @@ class MainPage(CTk):
             self.current_connection_status_entry.insert(0, 'IN-CLASS')
             self.current_connection_status_entry.configure(state=DISABLED)
             self.start_button.configure(text="Stop", fg_color='red', hover_color='#9C1218')
-            self.attendance_confirmed = True
             
             # Start the first attendance check
             Thread(target=self.random_attendance_check, daemon=True).start()
@@ -287,6 +290,8 @@ class MainPage(CTk):
             self.current_connection_status_entry.insert(0, 'OFFLINE')
             self.current_connection_status_entry.configure(state=DISABLED)
             self.start_button.configure(text="Start", fg_color='#1F6AA5', hover_color='#144870')
+        
+        self.attendance_confirmed = True
 
     def sender_func(self, txt):   
         """Send data to server"""
