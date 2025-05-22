@@ -18,6 +18,59 @@ from backend.image_processing.looking_result.func_looking_result import looking_
 from backend.looking_result_sender import send_data_to_server
 from backend.open_windows_sender import send_data
 
+class InAppAlert:
+    def __init__(self, root):
+        self.root = root
+        self.alert_active = False
+        
+    def show_alert(self, message, duration=0):
+        if self.alert_active:
+            return
+            
+        self.alert_active = True
+        
+        # Create overlay frame
+        self.overlay = CTkFrame(self.root,
+                                fg_color="gray20",
+                                corner_radius=0)
+        self.overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
+        
+        # Alert frame
+        self.alert_frame = CTkFrame(self.overlay,
+                                  fg_color="#1A1A1A",
+                                  border_color="#FF4444",
+                                  border_width=3,
+                                  corner_radius=15,
+                                  width=400,
+                                  height=200)
+        self.alert_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # Alert contents
+        CTkLabel(self.alert_frame,
+                text="⚠ Warning ⚠",
+                font=("Arial", 24, "bold"),
+                text_color="#FF4444").pack(pady=(15,5), padx=30)
+        
+        CTkLabel(self.alert_frame,
+                text=message,
+                font=("Arial", 16),
+                text_color="white",
+                wraplength=380,
+                justify="center").pack(pady=5, padx=20)
+        
+        # Auto-close only if duration is specified
+        if duration > 0:
+            Thread(target=self._auto_close, args=(duration,), daemon=True).start()
+
+    def _auto_close(self, duration):
+        time.sleep(duration)
+        self.root.after(0, self._cleanup)
+
+    def _cleanup(self):
+        if hasattr(self, 'overlay'):
+            self.overlay.destroy()
+        self.alert_active = False
+
 class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
@@ -35,6 +88,7 @@ class MainPage(CTk):
         self.odd_even = 1
         self.attendance_check_active = False
         self.attendance_confirmed = True
+        self.present = True
         self.attendance_lock = Lock()
         self.title('Main-Page')
         self.geometry('1000x650')
@@ -44,12 +98,26 @@ class MainPage(CTk):
         self.get_available_cameras()
         self.setup_ui()
         
+        # Initialize alert system
+        self.alert_system = InAppAlert(self)
+        
         # Start background threads
         Thread(target=self.ping_handler, daemon=True).start()
         Thread(target=self.start_video_stream, daemon=True).start()
+        Thread(target=self.monitor_attendance_status, daemon=True).start()
         
         # Setup keyboard listener
         keyboard.on_press_key("k", lambda _: self.key_pressed())
+
+    def monitor_attendance_status(self):
+        """Continuously monitor attendance status and show/hide alert"""
+        while True:
+            if not self.present and self.odd_even % 2 == 0:
+                self.after(0, self.alert_system.show_alert, 
+                          "You have been marked as absent!\nPress K to confirm your attendance")
+            elif self.present and self.alert_system.alert_active:
+                self.after(0, self.alert_system._cleanup)
+            time.sleep(1)
 
     def setup_ui(self):
         """Initialize all UI components"""
@@ -171,7 +239,7 @@ class MainPage(CTk):
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         reference_image = r"C:\sap-project\registered_image.jpg"
 
-        if not self.attendance_confirmed:
+        if not self.present:
             send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
             self.sender_func(f'absent|=|{current_time}')
             return 
@@ -214,19 +282,20 @@ class MainPage(CTk):
                     title='Attendance Check',
                     message='Press K to confirm your attendance',
                     app_name='Class Attendance',
-                    timeout=120
+                    timeout=60
                 )
                 
                 print("Press K to confirm your attendance")
                 
                 # Wait for 2 minutes for user response
                 start_time = time.time()
-                while time.time() - start_time < 120:
+                while time.time() - start_time < 60:
                     if self.attendance_confirmed:
                         break
                     time.sleep(1)
                 
                 if not self.attendance_confirmed:
+                    self.present = False # if not press k, mark as absent
                     notification.notify(
                         title='Attendance Warning',
                         message='You have been marked as absent! Press K to confirm attendance',
@@ -242,6 +311,7 @@ class MainPage(CTk):
         """Handle K key press for attendance confirmation"""
         if not self.attendance_confirmed:
             self.attendance_confirmed = True
+            self.present = True # if press k, mark as present
             notification.notify(
                 title='Attendance Confirmed',
                 message='Your attendance has been confirmed!',
