@@ -143,11 +143,16 @@ class AddFacePage(CTk):
                         return
                     class_id = str(self.udata[3])
                     school_id = str(self.udata[5])
+                    national_code = str(self.udata[4])
+                    print("this is class id {}".format(class_id))
+                    print("this is school id {}".format(school_id))
+
+
                     # getting image from server in other thread
-                    download_thread = threading.Thread(target=get_image, args=(school_id, class_id, self.udata[4]))
+                    download_thread = threading.Thread(target=get_image, args=(school_id, class_id, national_code))
                     download_thread.start()
                     download_thread.join()  # waiting for download complete
-                    
+
                     if not os.path.exists(self.real_image):
                         error_queue.put("Couldn't connect to server!")
                         return
@@ -190,6 +195,8 @@ class AddFacePage(CTk):
                             main_page_func_student(self.udata)
                         else:
                             self.add_face_button.configure(state='normal', text='Add Face')
+                except Exception as er:
+                    print(f'ERROR Occured \n{str(er)}')
                 
                 finally:
                     # enable button at the end 

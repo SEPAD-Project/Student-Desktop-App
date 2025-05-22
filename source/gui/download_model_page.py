@@ -267,9 +267,9 @@ class DownloadModelPage(CTk):
     def run(self):
         self.mainloop()
 
-def start():
-    app = DownloadModelPage('x')
+def start(udata):
+    app = DownloadModelPage(udata)
     app.run()   
 
 if __name__ == '__main__':
-    start()
+    start('x')

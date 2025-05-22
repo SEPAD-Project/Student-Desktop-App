@@ -187,7 +187,7 @@ class StudentSideAppLoginPage(CTk):
             else:
                 # User doesn't have required face recognition model files
                 # Go to download page
-                start()
+                start(user_data)
 
         except (PermissionError, OSError) as e:
             self.show_error("File Error", f"File operation failed: {str(e)}")
