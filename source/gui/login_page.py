@@ -6,6 +6,7 @@ from requests import get, exceptions
 from pathlib import Path
 from getpass import getuser
 from download_model_page import start
+
 username = getuser()
 # System paths
 sys.path.append(str(Path(__file__).resolve().parent))
@@ -155,24 +156,38 @@ class StudentSideAppLoginPage(CTk):
             self.show_error("Login Failed", "Invalid username or password!")
             self.toggle_login_button()
 
+    def check_required_files(self):
+        """Check if all required model files exist"""
+        model_dir = Path(r"C:\sap-project\.insightface\models\buffalo_l")
+        required_files = [
+            "w600k_r50.onnx",
+            "genderage.onnx",
+            "det_10g.onnx",
+            "2d106det.onnx",
+            "1k3d68.onnx"
+        ]
+        
+        # Check if all required files exist
+        return all((model_dir / file).exists() for file in required_files)
+
     def handle_post_login(self, user_data):
         """Handle post-login operations"""
         try:
             data_path = Path(r"C:\sap-project")
             registered_image = data_path / "registered_image.jpg"
-            BUFFALO_MODEL_PATH = Path(r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip")            
+            
             if not data_path.exists():
                 data_path.mkdir(parents=True, exist_ok=True)
 
-            if BUFFALO_MODEL_PATH.exists() :
+            if self.check_required_files():
                 if registered_image.exists():
                     main_page_func_student(user_data)
                 else:
                     add_face_page_func(user_data)
             else:
-                    # user doesnt have face recognizer or face detector model
-                    # go to download page
-                    start()
+                # User doesn't have required face recognition model files
+                # Go to download page
+                start()
 
         except (PermissionError, OSError) as e:
             self.show_error("File Error", f"File operation failed: {str(e)}")
