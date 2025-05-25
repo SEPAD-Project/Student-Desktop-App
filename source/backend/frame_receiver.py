@@ -31,7 +31,6 @@ def get_frames_from_api(school_code, class_name, national_code):
         # Return the raw image data (frames)
         return response.content
     else:
-        # Print the error message
         print(f"Error: {response.status_code} - {response.json().get('error')}")
         return None
 
@@ -67,8 +66,8 @@ def get_image(school_code, class_name, national_code):
 # Example usage
 if __name__ == "__main__":
     # Input data
-    school_code = "123"
-    class_name = "1052"
+    school_code = "1"
+    class_name = "2"
     national_code = "09295"
     
     get_image(school_code, class_name, national_code)

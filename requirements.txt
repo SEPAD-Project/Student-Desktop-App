@@ -6,7 +6,6 @@ requests
 flask
 cryptography
 ping3
-pillow # notif
-numpy # notif
 pyftpdlib
 win32gui
+plyer

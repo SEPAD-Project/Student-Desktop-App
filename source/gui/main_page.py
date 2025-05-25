@@ -8,7 +8,6 @@ from ping3 import ping
 import time
 from tkinter import messagebox
 from datetime import datetime
-import random
 import keyboard
 from plyer import notification
 
@@ -24,7 +23,7 @@ class MainPage(CTk):
         cv2.setLogLevel(0)
 
         self.udata = udata
-        print(self.udata)
+        # print(self.udata)
         self.first_name = udata[0]
         self.family_name = udata[1]
         self.password = udata[2]
@@ -237,7 +236,7 @@ class MainPage(CTk):
                     timeout=60
                 )
                 
-                print("Press K to confirm your attendance")
+                # print("Press K to confirm your attendance")
                 
                 # Wait for 2 minutes for user response
                 start_time = time.time()
@@ -254,7 +253,7 @@ class MainPage(CTk):
                         app_name='Class Attendance',
                         timeout=60
                     )
-                    print("User marked as absent. Press K to confirm attendance")
+                    # print("User marked as absent. Press K to confirm attendance")
         finally:
             with self.attendance_lock:
                 self.attendance_check_active = False
@@ -269,7 +268,7 @@ class MainPage(CTk):
                 message='Your attendance has been confirmed!',
                 app_name='Class Attendance'
             )
-            print("User attendance confirmed")
+            # print("User attendance confirmed")
             
             # Schedule next check
             if self.odd_even % 2 == 0:

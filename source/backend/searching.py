@@ -1,14 +1,10 @@
 import mysql.connector
 
-def get_values_by_username(value, person, host='localhost', user='root', password='ardbms', database='sap'):
+def get_values_by_username(value, person, database='sap'):
     # connetcting to db
     db = mysql.connector.connect(
-        # host=host,  
-        # user=user,       
-        # password=password,  
-        # database=database 
     host="185.4.28.110",  
-    user="root", # sapacc - ardbms
+    user="root", 
     port=5000,   
     password="sapprogram2583",
     database=database
@@ -18,7 +14,6 @@ def get_values_by_username(value, person, host='localhost', user='root', passwor
     if person == 'student' :
         cursor.execute("SELECT COUNT(*) FROM students WHERE student_national_code = '{}'".format(value))
         result = cursor.fetchone()
-        print(result)
         if result[0] > 0:
             cursor.execute('SELECT student_name, student_family, student_password, class_id, student_national_code, school_id class FROM students WHERE student_national_code = %s', (value,))
 
@@ -27,7 +22,6 @@ def get_values_by_username(value, person, host='localhost', user='root', passwor
             db.close()
 
             if udata:
-                print(udata)
                 return(udata)
             else:
                 return(False)
@@ -70,7 +64,6 @@ def get_class_name(school_code):
     return result[0]
 
 def get_students_name_by_national_code(national_code):
-    print(national_code)
     db = mysql.connector.connect(
     host="185.4.28.110",  
     user="root", 
@@ -85,7 +78,7 @@ def get_students_name_by_national_code(national_code):
         name = result[0] + ' ' + result[1]
         return name
     else:
-        print(result)
+        pass
         
 
 if __name__ == '__main__' :

@@ -7,12 +7,8 @@ import requests
 import time
 import os
 from add_face_page import add_face_page_func
-import getpass
 import zipfile
 
-
-username = getpass.getuser()
-print("Username (getpass):", username)
 
 # System paths
 BUFFALO_MODEL_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip"

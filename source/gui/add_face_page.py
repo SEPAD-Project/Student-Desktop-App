@@ -21,15 +21,11 @@ class AddFacePage(CTk):
     def __init__(self, udata):
         super().__init__()
         self.udata = udata
-        print(udata)
         cv2.setLogLevel(0)
         self.title('Add Face-Page')
         self.geometry('750x580')
         self.minsize(750, 580)
         # self.resizable(False, False)
-
-
-        
 
         self.get_available_cameras()
         # main red frame
@@ -81,18 +77,15 @@ class AddFacePage(CTk):
                     try:
                         self.video_label.configure(image=imagectk)
                     except Exception as er:
-                        print('SUP ER')
                         print(er)
                 self.after(30, self.update_video)
             except Exception as e:
-                print('E')
                 print(e)
         else:
             self.cap.release()
     # changing camera by releasing and reopening with VideoCapture
     def change_camera(self, camera_name):
         camera_index = self.available_camera.get(camera_name, -1)
-        print(camera_index)
         if self.cap.isOpened():
             self.cap.release()
         self.cap = cv2.VideoCapture(camera_index)
@@ -144,9 +137,6 @@ class AddFacePage(CTk):
                     class_id = str(self.udata[3])
                     school_id = str(self.udata[5])
                     national_code = str(self.udata[4])
-                    print("this is class id {}".format(class_id))
-                    print("this is school id {}".format(school_id))
-
 
                     # getting image from server in other thread
                     download_thread = threading.Thread(target=get_image, args=(school_id, class_id, national_code))
@@ -158,7 +148,6 @@ class AddFacePage(CTk):
                         return
                     
                     # comparing pictures
-                    print(type(self.face_frame))
                     compare_result = compare(ref_image_path=self.real_image,
                                             new_frame=self.face_frame)
                     result_queue.put(compare_result)

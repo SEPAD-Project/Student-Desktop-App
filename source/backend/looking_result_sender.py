@@ -109,8 +109,8 @@ if __name__ == "__main__":
     success = send_data_to_server(  text_to_send,
                                     '09295',
                                     '123',
-                                    '123',
-                                    '1052')
+                                    '1',
+                                    '2')
     
     if success:
         print("Status sent successfully")
