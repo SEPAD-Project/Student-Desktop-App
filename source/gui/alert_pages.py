@@ -75,14 +75,14 @@ class InAppAlert:
         self._animate_particles()
     
     def _animate_particles(self):
-        if not self.alert_active:
+        if not self.alert_active or not hasattr(self, 'particle_canvas'):
             return
             
         for particle in self.particles:
             particle.move()
         self.root.after(30, self._animate_particles)
         
-    def show_alert(self, message_type="warning", title="", message="", duration=0):
+    def show_alert(self, message_type="warning", title="", message="", duration=0, enable_particles=True):
         """
         Display a customizable alert
         
@@ -91,6 +91,7 @@ class InAppAlert:
         - title: The header text for the alert
         - message: The main content of the alert
         - duration: Auto-close after seconds (0 = manual close)
+        - enable_particles: Boolean to toggle particle effects
         """
         if self.alert_active:
             return
@@ -135,13 +136,14 @@ class InAppAlert:
         # Create overlay frame
         self.overlay = ctk.CTkFrame(
             self.root,
-            fg_color="#111111",
+            fg_color="#111111" if enable_particles else colors["bg"],
             corner_radius=0
         )
         self.overlay.place(relx=0, rely=0, relwidth=1, relheight=1)
         
-        # Create particle background
-        self._create_particle_background(self.overlay)
+        # Create particle background if enabled
+        if enable_particles:
+            self._create_particle_background(self.overlay)
         
         # Alert frame
         self.alert_frame = ctk.CTkFrame(
@@ -223,53 +225,40 @@ class InAppAlert:
         self.alert_active = False
         self.particles = []
 
-# Example usage
+
+# Example usage with particle toggle
 if __name__ == "__main__":
     root = ctk.CTk()
     root.geometry("800x600")
     
     alert = InAppAlert(root)
     
-    # Example 1: Warning alert
-    def show_warning():
-        alert.show_alert(
-            message_type="warning",
-            title="SYSTEM MAINTENANCE",
-            message="Scheuled maintenance will begin in 15 minutes. Please save your work.",
-            duration=1
-        )
-    
-    # Example 2: Error alert
-    def show_error():
+    # Example with particles enabled
+    def show_with_particles():
         alert.show_alert(
             message_type="error",
-            title="ACCESS DENIED",
-            message="Invalid credentials detected. Please try again or contact support.",
+            title="SECURITY ALERT",
+            message="Unauthorized access attempt detected",
             duration=0
+
         )
     
-    # Example 3: Success alert
-    def show_success():
-        alert.show_alert(
-            message_type="success",
-            title="OPERATION COMPLETE",
-            message="Your changes have been saved successfully.",
-            duration=3  # Auto-close after 3 seconds
-        )
-    
-    # Example 4: Info alert
-    def show_info():
+    # Example with particles disabled
+    def show_without_particles():
         alert.show_alert(
             message_type="info",
-            title="NEW FEATURE AVAILABLE",
-            message="The latest update includes new reporting tools. Check the help menu for details.",
-            duration=0
+            title="SYSTEM NOTIFICATION",
+            message="New update available for installation",
+            duration=3
         )
     
     # Create test buttons
-    ctk.CTkButton(root, text="Show Warning", command=show_warning).pack(pady=10)
-    ctk.CTkButton(root, text="Show Error", command=show_error).pack(pady=10)
-    ctk.CTkButton(root, text="Show Success", command=show_success).pack(pady=10)
-    ctk.CTkButton(root, text="Show Info", command=show_info).pack(pady=10)
+    ctk.CTkButton(root, 
+                 text="Show Alert With Particles", 
+                 command=show_with_particles).pack(pady=10)
+    
+    ctk.CTkButton(root, 
+                 text="Show Alert Without Particles", 
+                 command=show_without_particles).pack(pady=10)
     
     root.mainloop()
