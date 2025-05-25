@@ -3,6 +3,7 @@ from threading import Thread
 import time
 import random
 import math
+import webbrowser
 
 class ParticleLine:
     def __init__(self, canvas, width, height):
@@ -152,15 +153,18 @@ class InAppAlert:
 
         self.root.after(30, self._animate_dots_with_lines)
 
-    def show_alert(self, message_type="warning", title="", message="", duration=0, particle_type="line"):
+    def show_alert(self, message_type="warning", title="", message="", duration=0, particle_type="line", button_action="close", button_text=None, action_target=None):
         """
         Display a customizable alert
-        Parameters:
+            Parameters:
         - message_type: "warning", "error", "success", or "info"
         - title: The header text for the alert
         - message: The main content of the alert
         - duration: Auto-close after seconds (0 = manual close)
         - particle_type: "line", "dot", "dot+line", "off"
+        - button_action: "close" to close alert, "url" to open URL, "command" to execute function
+        - button_text: Custom text for the button (defaults to "ACKNOWLEDGE" or "OPEN LINK")
+        - action_target: URL if button_action="url", function if button_action="command"
         """
         if self.alert_active:
             return
@@ -234,12 +238,26 @@ class InAppAlert:
             justify="center"
         ).pack(pady=10, padx=30)
 
+        # Determine button text
+        if button_text is None:
+            button_text = "OPEN LINK" if button_action == "url" else "ACKNOWLEDGE"
+
+        # Button command based on action type
+        if button_action == "close":
+            button_command = self._cleanup
+        elif button_action == "url":
+            button_command = lambda: [webbrowser.open(action_target), self._cleanup()]
+        elif button_action == "command":
+            button_command = lambda: [action_target(), self._cleanup()]
+        else:
+            button_command = self._cleanup
+
         # Button
         button_frame = ctk.CTkFrame(self.alert_frame, fg_color="transparent")
         button_frame.pack(pady=(10, 20))
         ctk.CTkButton(
             button_frame,
-            text="ACKNOWLEDGE",
+            text=button_text,
             fg_color="transparent",
             border_color=colors["border"],
             border_width=1,
@@ -248,7 +266,7 @@ class InAppAlert:
             width=140,
             height=32,
             corner_radius=4,
-            command=self._cleanup
+            command=button_command
         ).pack()
 
         # Auto-close if duration specified
@@ -273,24 +291,41 @@ if __name__ == "__main__":
     root.geometry("800x600")
     alert = InAppAlert(root)
 
-    def show_with_particles():
+    def custom_action():
+        print("Custom function executed!")
+    
+    def show_close_alert():
         alert.show_alert(
             message_type="error",
-            title="SECURITY ALERT",
-            message="Unauthorized access attempt detected",
-            duration=0,
-            particle_type="dot+line"
+            title="STANDARD ALERT",
+            message="This will close when you click the button",
+            particle_type="dot+line",
+            button_action="close"
         )
-
-    def show_without_particles():
+    
+    def show_url_alert():
         alert.show_alert(
             message_type="info",
-            title="SYSTEM NOTIFICATION",
-            message="New update available for installation",
-            duration=3,
-            particle_type="line"
+            title="EXTERNAL LINK",
+            message="Click the button to visit our website",
+            particle_type="line",
+            button_action="url",
+            button_text="VISIT WEBSITE",
+            action_target="https://example.com"
+        )
+    
+    def show_command_alert():
+        alert.show_alert(
+            message_type="success",
+            title="CUSTOM ACTION",
+            message="This will execute a function when clicked",
+            particle_type="dot",
+            button_action="command",
+            button_text="EXECUTE",
+            action_target=custom_action
         )
 
-    ctk.CTkButton(root, text="Show Alert With Particles", command=show_with_particles).pack(pady=10)
-    ctk.CTkButton(root, text="Show Alert Without Particles", command=show_without_particles).pack(pady=10)
+    ctk.CTkButton(root, text="Standard Close Alert", command=show_close_alert).pack(pady=10)
+    ctk.CTkButton(root, text="URL Alert", command=show_url_alert).pack(pady=10)
+    ctk.CTkButton(root, text="Command Alert", command=show_command_alert).pack(pady=10)
     root.mainloop()
