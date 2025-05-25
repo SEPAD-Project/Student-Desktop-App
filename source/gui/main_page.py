@@ -62,9 +62,10 @@ class MainPage(CTk):
             if not self.present and self.odd_even % 2 == 0:
                 self.after(0, self.alert_system.show_alert, 
             "error",
-            "ACCESS DENIED",
-            "Invalid credentials detected. Please try again or contact support.",
-            0
+            "ATTENDANCE REQUIRED",
+            "You have been marked as absent for the current session.\n\nPress K to confirm your attendance",
+            0,
+            "line"
 )
             elif self.present and self.alert_system.alert_active:
                 self.after(0, self.alert_system._cleanup)
