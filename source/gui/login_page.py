@@ -6,6 +6,7 @@ from requests import get, exceptions
 from pathlib import Path
 from getpass import getuser
 from download_model_page import start
+from alert_pages import InAppAlert
 
 username = getuser()
 # System paths
@@ -17,6 +18,7 @@ from add_face_page import add_face_page_func
 
 class StudentSideAppLoginPage(CTk):
     def __init__(self):
+        self.alert_system = InAppAlert(self)
         super().__init__()
         self.init_ui()
         self.setup_window()
@@ -199,7 +201,15 @@ class StudentSideAppLoginPage(CTk):
 
     def show_error(self, title, message):
         """Show error message dialog"""
-        self.after(0, lambda: messagebox.showerror(title, message))
+        # self.after(0, lambda: messagebox.showerror(title, message))
+        self.alert_system.show_alert(
+            message_type="error",
+            title=title,
+            message=message,
+            duration=3,
+            particle_type="line"
+            )
+
 
     def run(self):
         self.mainloop()
