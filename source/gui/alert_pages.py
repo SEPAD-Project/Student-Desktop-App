@@ -8,8 +8,8 @@ import webbrowser
 class ParticleLine:
     def __init__(self, canvas, width, height):
         self.canvas = canvas
-        self.width = width
-        self.height = height
+        self.width = max(width, 100)  # Ensure minimum dimensions
+        self.height = max(height, 100)
         self.reset_position()
         self.length = random.randint(8, 15)
         self.speed = random.uniform(0.3, 1.2)
@@ -21,13 +21,16 @@ class ParticleLine:
             self.y + math.sin(self.angle) * self.length,
             fill=self.color, width=1
         )
+        
     def reset_position(self):
         """Reset particle to random position within canvas"""
         self.x = random.randint(0, self.width)
         self.y = random.randint(0, self.height)
+        
     def _select_color(self):
         colors = ["#FF4444", "#AAAAAA", "#888888", "#FF3333"]
         return random.choice(colors)
+        
     def move(self):
         self.x += math.cos(self.angle) * self.speed
         self.y += math.sin(self.angle) * self.speed
@@ -46,8 +49,8 @@ class ParticleLine:
 class Particle:
     def __init__(self, canvas, width, height):
         self.canvas = canvas
-        self.width = width
-        self.height = height
+        self.width = max(width, 100)  # Ensure minimum dimensions
+        self.height = max(height, 100)
         self.reset_position()
         self.radius = 2
         self.speed = random.uniform(0.5, 1.2)
@@ -58,9 +61,11 @@ class Particle:
             self.x + self.radius, self.y + self.radius,
             fill=self.color, outline=""
         )
+        
     def reset_position(self):
         self.x = random.randint(0, self.width)
         self.y = random.randint(0, self.height)
+        
     def move(self):
         self.x += math.cos(self.angle) * self.speed
         self.y += math.sin(self.angle) * self.speed
@@ -91,12 +96,17 @@ class InAppAlert:
             highlightthickness=0
         )
         self.particle_canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
-
-        # Get actual dimensions
-        self.particle_canvas.update()
-        width = self.particle_canvas.winfo_width()
-        height = self.particle_canvas.winfo_height()
-
+        
+        # Force update to get proper dimensions
+        overlay.update_idletasks()
+        
+        # Get actual dimensions after rendering
+        width = max(overlay.winfo_width(), 100)
+        height = max(overlay.winfo_height(), 100)
+        
+        # Set explicit dimensions
+        self.particle_canvas.config(width=width, height=height)
+        
         # Initialize based on type
         if particle_type == "line":
             self.particles_line = [ParticleLine(self.particle_canvas, width, height) for _ in range(40)]
@@ -107,7 +117,6 @@ class InAppAlert:
         elif particle_type == "dot+line":
             self.particles_dot = [Particle(self.particle_canvas, width, height) for _ in range(60)]
             self._animate_dots_with_lines()
-        # If particle_type == "off", do nothing
 
     def _animate_particles(self, particle_type="line"):
         if not self.alert_active or not hasattr(self, 'particle_canvas'):
@@ -153,9 +162,12 @@ class InAppAlert:
 
         self.root.after(30, self._animate_dots_with_lines)
 
-    def show_alert(self, message_type="warning", title="", message="", duration=0, particle_type="line", button_action="close", button_text=None, action_target=None):
+    def show_alert(self, message_type="warning", title="", message="", duration=0, 
+                  particle_type="line", button_action="close", button_text=None, 
+                  action_target=None):
         """
         Display a customizable alert
+        
             Parameters:
         - message_type: "warning", "error", "success", or "info"
         - title: The header text for the alert

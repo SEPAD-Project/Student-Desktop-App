@@ -58,16 +58,17 @@ class StudentSideAppLoginPage(CTk):
             latest_version = self.get_latest_github_version()
             
             if latest_version and latest_version > current_version:
-                self.alert_system.show_alert(
-                    message_type="info",
-                    title="New Version Available",
-                    message=f"Version {latest_version} is available! (You have {current_version})",
-                    duration=0,  # 0 means it won't disappear automatically
-                    particle_type="line",
-                    button_action='url',
-                    button_text='GET THE LATEST VERSION',
-                    action_target='http://185.4.28.110:2568'
+                self.after(0, self.alert_system.show_alert,
+                    "info",
+                    "New Version Available",
+                    f"Version {latest_version} is available! (You have {current_version})",
+                    0,
+                    "line",
+                    'url',
+                    'GET THE LATEST VERSION',
+                    'http://185.4.28.110:2568'
                 )
+                
 
         except Exception as e:
             print(f"Version check failed: {str(e)}")
@@ -88,7 +89,7 @@ class StudentSideAppLoginPage(CTk):
             title="Connection Error",
             message="No internet connection! Please connect to the internet and restart the application.",
             duration=0,  # Persistent until user closes it
-            particle_type="line"
+            particle_type="off"
         )
 
     def get_current_version(self):
