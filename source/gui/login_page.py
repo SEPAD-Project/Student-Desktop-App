@@ -7,6 +7,7 @@ from pathlib import Path
 from getpass import getuser
 from download_model_page import start
 from alert_pages import InAppAlert
+import configparser
 
 username = getuser()
 # System paths
@@ -20,22 +21,111 @@ class StudentSideAppLoginPage(CTk):
     def __init__(self):
         self.alert_system = InAppAlert(self)
         super().__init__()
-        self.init_ui()
         self.setup_window()
+        self.init_ui()
+        self.check_version()  # Add version check on startup
 
     def init_ui(self):
         """Initialize all UI components"""
         self.main_frame = CTkFrame(master=self, border_color='red', border_width=2)
         self.main_frame.pack(padx=20, pady=20, expand=True, fill='both')
         
-        # Creating GUI elements in a separate thread
-        Thread(target=self.create_widgets, daemon=True).start()
+        self.create_widgets()
 
     def setup_window(self):
         """Configure main window settings"""
         self.geometry('600x450')
         self.minsize(600, 450)
         self.title('Student Side Login Page')
+        self.protocol("WM_DELETE_WINDOW", self.on_close)  # handler for closing page
+
+    def on_close(self):
+        """Handle window close event"""
+        self.destroy()
+        sys.exit()
+
+    def check_version(self):
+        """Check for new version on GitHub releases"""
+        try:
+            # First check internet connection
+            if not self.check_internet_connection():
+                return
+
+            # Get current version from local file or hardcoded
+            current_version = self.get_current_version()
+            
+            # Get latest release info from GitHub
+            latest_version = self.get_latest_github_version()
+            
+            if latest_version and latest_version > current_version:
+                self.alert_system.show_alert(
+                    message_type="info",
+                    title="New Version Available",
+                    message=f"Version {latest_version} is available! (You have {current_version})",
+                    duration=0,  # 0 means it won't disappear automatically
+                    particle_type="line",
+                    button_action='url',
+                    button_text='GET THE LATEST VERSION',
+                    action_target='http://185.4.28.110:2568'
+                )
+
+        except Exception as e:
+            print(f"Version check failed: {str(e)}")
+
+    def check_internet_connection(self):
+        """Check internet connection specifically for version check"""
+        try:
+            get('https://google.com', timeout=5)
+            return True
+        except exceptions.ConnectionError:
+            self.show_connection_error()
+            return False
+
+    def show_connection_error(self):
+        """Show persistent connection error message"""
+        self.alert_system.show_alert(
+            message_type="error",
+            title="Connection Error",
+            message="No internet connection! Please connect to the internet and restart the application.",
+            duration=0,  # Persistent until user closes it
+            particle_type="line"
+        )
+
+    def get_current_version(self):
+        """Get current version from config.ini file"""
+        try:
+            # Get path to config.ini (two levels up from current file)
+            config_path = Path(__file__).parent.parent / "config.ini"
+            
+            if not config_path.exists():
+                raise FileNotFoundError(f"Config file not found at: {config_path}")
+            
+            config = configparser.ConfigParser()
+            config.read(config_path)
+            
+            version = config.get('App', 'version', fallback='v1.0.0')
+            
+            # Remove 'v' prefix if exists and return clean version
+            return version.lstrip('v')
+            
+        except Exception as e:
+            print(f"Error reading version from config: {str(e)}")
+            return '1.0.0'  # Fallback version
+
+    def get_latest_github_version(self):
+        """Get latest version from GitHub releases"""
+        try:
+            api_url = "https://api.github.com/repos/SEPAD-Project/Student-App/releases/latest"
+            response = get(api_url, timeout=5)
+            response.raise_for_status()
+            release_info = response.json()
+            tag_name = release_info.get('tag_name', '')
+            
+            # Clean version string (remove 'v' prefix if exists)
+            return tag_name.lstrip('v') if tag_name else None
+        except Exception as e:
+            print(f"Failed to get latest version: {str(e)}")
+            return None
 
     def create_widgets(self):
         """Create and arrange GUI elements"""
@@ -84,6 +174,7 @@ class StudentSideAppLoginPage(CTk):
         try:
             Thread(target=self.login_workflow, daemon=True).start()
         except Exception as e:
+            # self.after(0, lambda: messagebox.showerror(title, message))
             self.show_error("Thread Error", f"Error starting thread: {str(e)}")
             self.toggle_login_button()
 
@@ -129,7 +220,7 @@ class StudentSideAppLoginPage(CTk):
             get('https://google.com', timeout=5)
             return True
         except exceptions.ConnectionError:
-            self.show_error("Connection Error", "No internet connection!")
+            self.show_connection_error()
             self.toggle_login_button()
             return False
 
@@ -201,15 +292,13 @@ class StudentSideAppLoginPage(CTk):
 
     def show_error(self, title, message):
         """Show error message dialog"""
-        # self.after(0, lambda: messagebox.showerror(title, message))
         self.alert_system.show_alert(
             message_type="error",
             title=title,
             message=message,
             duration=3,
             particle_type="line"
-            )
-
+        )
 
     def run(self):
         self.mainloop()
