@@ -1,7 +1,10 @@
-# SEPAD (The Persian acronym for Student Online Monitoring System) - Student App
+# SEPAD (The Persian acronym for Student Online Monitoring System) - Student Desktop App
+This repository is a part of the SEPAD project and was developed by [Abolfazl Rashidian](https://github.com/abolfazlrashidian) for students to enter the class and send their attention level to the server.
+
+Click [here](https://github.com/SEPAD-Project) to visit the SEPAD organization.
 
 ## Overview
-The Student App is a core component of SEPAD, designed to monitor and report student engagement during online classes. The application uses webcam feeds to analyze student attention levels and provides real-time feedback to educators.
+This application is a module of SEPAD that students launch during online classes. It performs three core functions: analyzing facial engagement, monitoring notification responses, and tracking desktop activity - then transmits the results to the server.
 
 ## Requirements
 Before installation, ensure you meet these requirements:
@@ -16,11 +19,11 @@ Before installation, ensure you meet these requirements:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/SEPAD-Project/Student-App.git
+git clone https://github.com/SEPAD-Project/Student-Desktop-App.git
 ```
-2. Navigate to the student-app directory:
+2. Navigate to the student-desktop-app directory:
 ```bash
-cd student-app
+cd student-desktop-app
 ```
 3. Install required dependencies:
 ```bash
@@ -39,7 +42,7 @@ python run.py
 
 ## Directory Structure
 ```bash
-student-app/
+student-desktop-app/
 ├── source/
 ├── └──
 ├──── gui/                 # GUI components
@@ -61,29 +64,4 @@ student-app/
 
 # 📬 Contact  
 **Email**: SepadOrganizations@gmail.com  
-**Issues**: [GitHub Issues](https://github.com/SEPAD-Project/Student-App/issues)  
-
-# 📜 License (MIT)  
-```text
-MIT License
-
-Copyright (c) 2023 SEPAD Project
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+**Issues**: [GitHub Issues](https://github.com/SEPAD-Project/Student-Desktop-App/issues)  

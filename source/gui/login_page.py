@@ -116,7 +116,7 @@ class StudentSideAppLoginPage(CTk):
     def get_latest_github_version(self):
         """Get latest version from GitHub releases"""
         try:
-            api_url = "https://api.github.com/repos/SEPAD-Project/Student-App/releases/latest"
+            api_url = "https://api.github.com/repos/SEPAD-Project/Student-desktop-App/releases/latest"
             response = get(api_url, timeout=5)
             response.raise_for_status()
             release_info = response.json()
