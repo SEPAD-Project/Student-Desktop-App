@@ -7,5 +7,10 @@ flask
 cryptography
 ping3
 pyftpdlib
-win32gui
+pywin32
 plyer
+keyboard
+mediapipe
+numpy
+insightface
+onnxruntime

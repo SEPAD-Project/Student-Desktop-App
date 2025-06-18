@@ -1,3 +1,5 @@
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/SEPAD-Project/Student-Desktop-App/blob/main/README.md)
+[![fa](https://img.shields.io/badge/lang-fa-blue.svg)](https://github.com/SEPAD-Project/Student-Desktop-App/blob/main/README.fa.md)
 # SEPAD (The Persian acronym for Student Online Monitoring System) - Student Desktop App
 This repository is a part of the SEPAD project and was developed by [Abolfazl Rashidian](https://github.com/abolfazlrashidian) for students to enter the class and send their attention level to the server.
 
@@ -25,11 +27,19 @@ git clone https://github.com/SEPAD-Project/Student-Desktop-App.git
 ```bash
 cd student-desktop-app
 ```
-3. Install required dependencies:
+3. Create a virtual environment:
+```bash
+python -m venv .venv
+```
+4. Activate the virtual environment:
+```bash
+.venv\Scripts\activate.bat
+```
+5. Install required dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-4. Install submodules:
+6. Install submodules:
 ```bash
 git submodule init
 git submodule update

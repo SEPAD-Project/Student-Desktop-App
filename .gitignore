@@ -1,2 +1,3 @@
 source/backend/__pycache__/
 source/gui/__pycache__/
+.venv/
