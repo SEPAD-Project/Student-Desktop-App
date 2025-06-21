@@ -44,10 +44,11 @@ pip install -r requirements.txt
 git submodule init
 git submodule update
 ```
+>Head Position Estimation requires vs-build-tools for `InsightFace` to function properly. please read it readme file.
 
 ## Running the Application
 ```bash
-python run.py
+python RUN.py
 ```
 
 ## Directory Structure
@@ -64,13 +65,6 @@ student-desktop-app/
 ├── .gitignore             # Git ignore file
 └── .gitmodules            # Submodule data
 ```
-
-# 📝 Contribution  
-1. Fork the repository  
-2. Create feature branch (`git checkout -b feature/NewFeature`)  
-3. Commit changes (`git commit -m 'Add NewFeature'`)  
-4. Push to branch (`git push origin feature/NewFeature`)  
-5. Open a Pull Request  
 
 # 📬 Contact  
 **Email**: SepadOrganizations@gmail.com  
