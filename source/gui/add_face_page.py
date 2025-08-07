@@ -129,15 +129,42 @@ class AddFacePage(CTk):
     def adding_face_func(self):
         self.real_image = "C:\\sap-project\\real_image.jpg"
         self.registered_image = "C:\\sap-project\\registered_image.jpg"
+        self.add_face_button.configure(state='disabled', text='Adding Face')
         
         def add_face():
-            # disabling button
-            self.add_face_button.configure(state='disabled', text='Adding Face')
-            
             # creating queue
             result_queue = queue.Queue()
             error_queue = queue.Queue()
             
+            def check_results():
+                try:
+                    # checking errors
+                    if not error_queue.empty():
+                        error_msg = error_queue.get()
+                        messagebox.showwarning('Error', error_msg)
+                        self.add_face_button.configure(state='normal', text='Add Face')
+                        return
+                    
+                    # checking results
+                    if not result_queue.empty():
+                        result = result_queue.get()
+                        if result == "success":
+                            try:
+                                self.destroy()
+                            except Exception as e:
+                                print(f'Destroy error: {e}')
+                            main_page_func_student(self.udata)
+                        else:
+                            self.add_face_button.configure(state='normal', text='Add Face')
+                except Exception as er:
+                    print(f'ERROR Occured \n{str(er)}')
+                
+                finally:
+                    # enable button at the end 
+                    self.after(100, lambda: self.add_face_button.configure(state='normal', text='Add Face'))
+            
+                self.after(100, check_results)
+
             def download_and_compare():
                 try:
                     if self.face_frame is None:
@@ -173,39 +200,12 @@ class AddFacePage(CTk):
                 
                 except Exception as e:
                     error_queue.put(f"Error: {str(e)}")
-            
-            def check_results():
-                try:
-                    # checking errors
-                    if not error_queue.empty():
-                        error_msg = error_queue.get()
-                        messagebox.showwarning('Error', error_msg)
-                        self.add_face_button.configure(state='normal', text='Add Face')
-                        return
-                    
-                    # checking results
-                    if not result_queue.empty():
-                        result = result_queue.get()
-                        if result == "success":
-                            try:
-                                self.destroy()
-                            except Exception as e:
-                                print(f'Destroy error: {e}')
-                            main_page_func_student(self.udata)
-                        else:
-                            self.add_face_button.configure(state='normal', text='Add Face')
-                except Exception as er:
-                    print(f'ERROR Occured \n{str(er)}')
-                
+
                 finally:
-                    # enable button at the end 
-                    self.after(100, lambda: self.add_face_button.configure(state='normal', text='Add Face'))
-            
-                self.after(100, check_results)
-        
+                    check_results()
+    
             processing_thread = threading.Thread(target=download_and_compare)
             processing_thread.start()
-            check_results()
 
         # calling function
         add_face()
