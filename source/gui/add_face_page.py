@@ -11,10 +11,11 @@ from pathlib import Path
 import sys
 import queue
 from threading import Thread
-
-sys.path.append(str(Path(__file__).resolve().parent))
+from insightface.app import FaceAnalysis
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from backend.frame_receiver import get_image
 from backend.image_processing.face_recognition.compare import compare
+from backend.path_manager import INSIGHTFACE_DIR
 
 
 class AddFacePage(CTk):
@@ -25,8 +26,16 @@ class AddFacePage(CTk):
         self.title('Add Face-Page')
         self.geometry('750x580')
         self.minsize(750, 580)
-        # self.resizable(False, False)
 
+        # Load the FaceAnalysis model only once, outside the loop
+        self.app = FaceAnalysis(
+            name="buffalo_l",
+            providers=["CPUExecutionProvider"],  # Can change to "CUDAExecutionProvider" for GPU
+            root=INSIGHTFACE_DIR
+        )
+        self.app.prepare(ctx_id=0)  # Prepare the model (once)
+
+        # self.resizable(False, False)
         self.get_available_cameras()
         # main red frame
         self.main_frame = CTkFrame(master=self, border_color='red', border_width=2)
@@ -149,7 +158,8 @@ class AddFacePage(CTk):
                     
                     # comparing pictures
                     compare_result = compare(ref_image_path=self.real_image,
-                                            new_frame=self.face_frame)
+                                            new_frame=self.face_frame,
+                                            app=self.app)
                     result_queue.put(compare_result)
                     
                     if compare_result:

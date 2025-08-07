@@ -11,7 +11,7 @@ import configparser
 
 username = getuser()
 # System paths
-sys.path.append(str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 # imports after path configuration
 from backend.login_page_db import check_auth
 from main_page import main_page_func_student
@@ -48,8 +48,8 @@ class StudentSideAppLoginPage(CTk):
         """Check for new version on GitHub releases"""
         try:
             # First check internet connection
-            if not self.check_internet_connection():
-                return
+            # if not self.check_internet_connection():
+            #     return
 
             # Get current version from local file or hardcoded
             current_version = self.get_current_version()
@@ -183,8 +183,8 @@ class StudentSideAppLoginPage(CTk):
         """Main login process flow"""
         try:
             # Checking the internet connection
-            if not self.check_internet():
-                return
+            # if not self.check_internet():
+            #     return
 
             # Initial validation
             if not self.validate_inputs():
@@ -273,8 +273,10 @@ class StudentSideAppLoginPage(CTk):
 
             if self.check_required_files():
                 if registered_image.exists():
+                    pass
                     main_page_func_student(user_data)
                 else:
+                    pass
                     add_face_page_func(user_data)
             else:
                 # User doesn't have required face recognition model files

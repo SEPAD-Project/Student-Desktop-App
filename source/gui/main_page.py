@@ -9,18 +9,34 @@ import time
 from tkinter import messagebox
 from datetime import datetime
 import keyboard
+import mediapipe as mp
+from insightface.app import FaceAnalysis
 from plyer import notification
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from backend.image_processing.looking_result.func_looking_result import looking_result
+from backend.image_processing.looking_result.func_looking_result import looking_result #type:ignore
 from backend.looking_result_sender import send_data_to_server
 from backend.open_windows_sender import send_data
+from backend.path_manager import INSIGHTFACE_DIR
 from alert_pages import InAppAlert
 
 class MainPage(CTk):
     def __init__(self, udata):
         super().__init__()
         cv2.setLogLevel(0)
+
+        # Load the FaceAnalysis model only once, outside the loop
+        self.app = FaceAnalysis(
+            name="buffalo_l",
+            providers=["CPUExecutionProvider"],  # Can change to "CUDAExecutionProvider" for GPU
+            root=INSIGHTFACE_DIR
+        )
+        self.app.prepare(ctx_id=0)  # Prepare the model (once)
+
+        self.face_mesh_obj = mp.solutions.face_mesh.FaceMesh(
+            refine_landmarks=True,
+            max_num_faces=1
+        )
 
         self.udata = udata
         # print(self.udata)
@@ -196,7 +212,7 @@ class MainPage(CTk):
             return 
     
         time.sleep(1)
-        self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame)}|=|{current_time}'
+        self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame, face_mesh_obj=self.face_mesh_obj, app=self.app)}|=|{current_time}'
         
         # Send data to server
         send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))

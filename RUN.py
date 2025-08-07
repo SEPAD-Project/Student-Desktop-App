@@ -1,10 +1,10 @@
 import sys
 from pathlib import Path
+from os import system
 
 sys.path.append(str(Path(__file__).resolve().parent)+"\\source\\backend")
 sys.path.append(str(Path(__file__).resolve().parent)+"\\source\\gui")
-print(str(Path(__file__).resolve().parent)+"source\\gui")
-
+system('clear')
 # class ignore:
 #     def write(self, *a):
 #         pass
