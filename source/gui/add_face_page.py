@@ -15,7 +15,7 @@ from insightface.app import FaceAnalysis
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from backend.frame_receiver import get_image
 from backend.image_processing.face_recognition.compare import compare
-from backend.path_manager import INSIGHTFACE_DIR
+from backend.path_manager import INSIGHTFACE_DIR, REAL_STUDENT_IMAGE, REGISTERED_STUDENT_IMAGE
 
 
 class AddFacePage(CTk):
@@ -127,8 +127,8 @@ class AddFacePage(CTk):
             self.taken_image = Image.fromarray(self.face_frame)
     # adding face after comparing two frames 
     def adding_face_func(self):
-        self.real_image = "C:\\sap-project\\real_image.jpg"
-        self.registered_image = "C:\\sap-project\\registered_image.jpg"
+        self.real_image = REAL_STUDENT_IMAGE
+        self.registered_image = REGISTERED_STUDENT_IMAGE
         self.add_face_button.configure(state='disabled', text='Adding Face')
         
         def add_face():

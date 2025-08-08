@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os 
 import configparser
+from path_manager import REAL_STUDENT_IMAGE
 
 config_path = os.path.join(os.path.dirname(__file__), '../config.ini')
 config = configparser.ConfigParser()
@@ -36,7 +37,7 @@ def get_frames_from_api(school_code, class_name, national_code):
 
 # Function to convert frames to an image and save it
 def save_frames_as_image(frames):
-    output_path = f'C://sap-project//real_image.jpg'
+    output_path = REAL_STUDENT_IMAGE
     if frames is None:
         print("No frames received. Cannot save image.")
         return

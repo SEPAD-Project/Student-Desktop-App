@@ -9,19 +9,16 @@ import os
 from add_face_page import add_face_page_func
 import zipfile
 
-
-# System paths
-BUFFALO_MODEL_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l.zip"
-EXTRACT_PATH = r"C:\\sap-project\\.insightface\\models\\buffalo_l"
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / "backend"))
+
+from backend.path_manager import BUFFALO_MODEL_PATH, BUFFALO_MODEL_EXTRACT_PATH
 
 MODELS = [
     {
         "url": "https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip",
         "path": BUFFALO_MODEL_PATH,
-        "extract_path": EXTRACT_PATH,
+        "extract_path": BUFFALO_MODEL_EXTRACT_PATH,
         "name": "BUFFALO MODEL"
     }
 ]
