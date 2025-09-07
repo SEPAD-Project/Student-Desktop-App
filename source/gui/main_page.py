@@ -33,7 +33,12 @@ class MainPage(CTk):
         )
         self.app.prepare(ctx_id=0)  # Prepare the model (once)
 
-        self.face_mesh_obj = mp.solutions.face_mesh.FaceMesh(
+        self.pose_face_mesh_obj = mp.solutions.face_mesh.FaceMesh(
+            refine_landmarks=True,
+            max_num_faces=1
+        )
+        
+        self.eye_face_mesh_obj = mp.solutions.face_mesh.FaceMesh(
             refine_landmarks=True,
             max_num_faces=1
         )
@@ -212,7 +217,7 @@ class MainPage(CTk):
             return 
     
         time.sleep(1)
-        self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame, face_mesh_obj=self.face_mesh_obj, app=self.app)}|=|{current_time}'
+        self.txt = f'{looking_result(ref_image_path=reference_image, frame=frame, pose_face_mesh_obj=self.pose_face_mesh_obj, eye_face_mesh_obj=self.eye_face_mesh_obj, app=self.app)}|=|{current_time}'
         
         # Send data to server
         send_data(str(SCHOOL_CODE), str(CLASS_NAME), str(STUDENT_ID))
